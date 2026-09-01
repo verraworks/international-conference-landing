@@ -270,10 +270,16 @@ main > section:first-child::before {
   50% { transform: translate3d(3px, -8px, 0) rotate(4deg); }
 }
 .timeline-shell { position: relative; }
+.timeline-date-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0 0 28px 48px;
+}
 .timeline-rule,
 .timeline-progress {
   position: absolute;
-  top: 10px;
+  top: 84px;
   bottom: 18px;
   left: 16px;
   width: 2px;
@@ -331,6 +337,7 @@ main > section:first-child::before {
   }
 }
 @media (min-width: 768px) {
+  .timeline-date-heading { margin-left: 190px; }
   .timeline-rule,
   .timeline-progress { left: 178px; }
   .timeline-event {

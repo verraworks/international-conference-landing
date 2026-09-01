@@ -213,6 +213,9 @@ function ScheduleTimeline({ entries }: { entries: string[][] }) {
   const timelineRef = useRef<HTMLDivElement>(null);
   const [timelineVisible, setTimelineVisible] = useState(false);
   const [progress, setProgress] = useState(0);
+  const timelineDate = entries === schedule.day1
+    ? { day: 'Friday', date: '04 December 2026' }
+    : { day: 'Saturday', date: '05 December 2026' };
 
   useEffect(() => {
     const timeline = timelineRef.current;
@@ -235,21 +238,39 @@ function ScheduleTimeline({ entries }: { entries: string[][] }) {
     };
   }, [entries]);
 
-  return <div ref={timelineRef} className="timeline-shell mt-14" data-testid="schedule-timeline">
-    <div className="timeline-rule" aria-hidden="true" />
-    <div className="timeline-progress" style={{ height: `${progress}%` }} aria-hidden="true" />
-    {entries.map(([time, title, detail], index) => {
-      const highlight = /Keynote|Plenary/i.test(title);
-      return <article key={`${time}-${title}`} className={`timeline-event ${timelineVisible ? 'timeline-event-visible' : ''} ${highlight ? 'timeline-event-highlight' : ''}`} style={{ transitionDelay: timelineVisible ? `${index * 55}ms` : '0ms' }} data-testid={`row-schedule-event-${index}`}>
-        <span className="timeline-node" aria-hidden="true" />
-        <div className="pt-1"><span className="font-mono-label text-[10px] tracking-[.08em] text-[hsl(var(--primary))]">{time}</span></div>
-        <div className="timeline-card rounded-[18px] border border-[hsl(var(--border))] px-5 py-5 sm:px-6">
-          <div className="flex items-start justify-between gap-4"><h3 className={`font-display text-2xl leading-[1.05] ${highlight ? 'text-[hsl(var(--primary))]' : ''}`}>{title}</h3>{highlight && <span className="shrink-0 rounded-full bg-[hsl(var(--accent)/.2)] px-2.5 py-1 font-mono-label text-[8px] uppercase tracking-[.12em] text-[hsl(var(--accent-foreground))]">Featured</span>}</div>
-          {detail && <p className="mt-3 max-w-3xl text-sm leading-6 text-[hsl(var(--muted-foreground))]">{detail}</p>}
-        </div>
-      </article>;
-    })}
-  </div>;
+  return (
+    <div ref={timelineRef} className="timeline-shell mt-14" data-testid="schedule-timeline">
+      <div className="timeline-date-heading">
+        <span className="font-mono-label text-[9px] uppercase tracking-[.18em] text-[hsl(var(--muted-foreground))]">Conference day</span>
+        <strong className="font-display text-3xl text-[hsl(var(--foreground))] sm:text-4xl">{timelineDate.day}, {timelineDate.date}</strong>
+      </div>
+      <div className="timeline-rule" aria-hidden="true" />
+      <div className="timeline-progress" style={{ height: `${progress}%` }} aria-hidden="true" />
+      {entries.map(([time, title, detail], index) => {
+        const highlight = /Keynote|Plenary/i.test(title);
+        return (
+          <article
+            key={`${time}-${title}`}
+            className={`timeline-event ${timelineVisible ? 'timeline-event-visible' : ''} ${highlight ? 'timeline-event-highlight' : ''}`}
+            style={{ transitionDelay: timelineVisible ? `${index * 55}ms` : '0ms' }}
+            data-testid={`row-schedule-event-${index}`}
+          >
+            <span className="timeline-node" aria-hidden="true" />
+            <div className="pt-1">
+              <span className="font-mono-label text-[10px] tracking-[.08em] text-[hsl(var(--primary))]">{time}</span>
+            </div>
+            <div className="timeline-card rounded-[18px] border border-[hsl(var(--border))] px-5 py-5 sm:px-6">
+              <div className="flex items-start justify-between gap-4">
+                <h3 className={`font-display text-2xl leading-[1.05] ${highlight ? 'text-[hsl(var(--primary))]' : ''}`}>{title}</h3>
+                {highlight && <span className="shrink-0 rounded-full bg-[hsl(var(--accent)/.2)] px-2.5 py-1 font-mono-label text-[8px] uppercase tracking-[.12em] text-[hsl(var(--accent-foreground))]">Featured</span>}
+              </div>
+              {detail && <p className="mt-3 max-w-3xl text-sm leading-6 text-[hsl(var(--muted-foreground))]">{detail}</p>}
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  );
 }
 
 function Home() {
