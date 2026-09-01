@@ -337,15 +337,44 @@ main > section:first-child::before {
   }
 }
 @media (min-width: 768px) {
-  .timeline-date-heading { margin-left: 190px; }
-  .timeline-rule,
-  .timeline-progress { left: 178px; }
-  .timeline-event {
-    grid-template-columns: 142px minmax(0, 1fr);
-    gap: 48px;
-    padding-left: 0;
+  .timeline-date-heading {
+    align-items: center;
+    margin-left: 0;
+    text-align: center;
   }
-  .timeline-node { left: 170px; }
+  .timeline-rule,
+  .timeline-progress {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .timeline-event {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 48px;
+    padding: 0 0 34px;
+  }
+  .timeline-event > .timeline-card {
+    grid-column: 1;
+  }
+  .timeline-event:nth-of-type(even) > .timeline-card {
+    grid-column: 2;
+  }
+  .timeline-event:nth-of-type(odd) > .timeline-card {
+    text-align: right;
+  }
+  .timeline-event:nth-of-type(odd) .timeline-card > .flex {
+    flex-direction: row-reverse;
+  }
+  .timeline-event:nth-of-type(odd) .timeline-card-meta {
+    text-align: right;
+  }
+  .timeline-node {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .timeline-event:hover .timeline-node,
+  .timeline-event-highlight .timeline-node {
+    transform: translateX(-50%) scale(1.18);
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

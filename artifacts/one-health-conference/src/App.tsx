@@ -256,10 +256,8 @@ function ScheduleTimeline({ entries }: { entries: string[][] }) {
             data-testid={`row-schedule-event-${index}`}
           >
             <span className="timeline-node" aria-hidden="true" />
-            <div className="pt-1">
-              <span className="font-mono-label text-[10px] tracking-[.08em] text-[hsl(var(--primary))]">{time}</span>
-            </div>
             <div className="timeline-card rounded-[18px] border border-[hsl(var(--border))] px-5 py-5 sm:px-6">
+              <div className="timeline-card-meta font-mono-label text-[10px] tracking-[.08em] text-[hsl(var(--primary))]">{time}</div>
               <div className="flex items-start justify-between gap-4">
                 <h3 className={`font-display text-2xl leading-[1.05] ${highlight ? 'text-[hsl(var(--primary))]' : ''}`}>{title}</h3>
                 {highlight && <span className="shrink-0 rounded-full bg-[hsl(var(--accent)/.2)] px-2.5 py-1 font-mono-label text-[8px] uppercase tracking-[.12em] text-[hsl(var(--accent-foreground))]">Featured</span>}
