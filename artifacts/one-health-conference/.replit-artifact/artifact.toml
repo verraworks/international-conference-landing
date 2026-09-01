@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "International One Health Conference"
+description = "A premium university conference landing page for the International Conference on One Health, with event information, program highlights, speakers, important dates, registration calls to action, and venue guidance."
+version = "1.0.0"
+id = "artifacts/one-health-conference"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 18293
+
+[services.development]
+run = "pnpm --filter @workspace/one-health-conference run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/one-health-conference", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/one-health-conference/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "18293"
+BASE_PATH = "/"
