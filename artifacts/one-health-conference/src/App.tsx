@@ -1,18 +1,26 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import {
   ArrowUpRight,
   BookOpen,
   BriefcaseMedical,
   CalendarDays,
   Check,
+  CheckCircle2,
   Clock3,
+  CreditCard,
+  Download,
   FileText,
+  FileUp,
   Globe2,
   HeartPulse,
+  Hotel,
   Mail,
   MapPin,
   Menu,
   Network,
+  Plane,
+  RefreshCw,
+  Search,
   Send,
   ShieldCheck,
   Sparkles,
@@ -38,11 +46,15 @@ type DialogKind = 'register' | 'abstract' | 'newsletter' | null;
 type ScheduleDay = 'day1' | 'day2';
 
 const navItems = [
-  ['Context', '#context'],
-  ['Program', '#program'],
+  ['Home', '#'],
+  ['About', '#context'],
+  ['Scope', '#topics'],
+  ['Schedule', '#program'],
   ['Speakers', '#speakers'],
   ['Papers', '#papers'],
-  ['Contact', '#contact'],
+  ['Committee', '#committee'],
+  ['Payment', '#payment'],
+  ['Venue & contact', '#venue'],
 ];
 
 const speakers = [
@@ -188,6 +200,7 @@ function Modal({ kind, onClose, language }: { kind: Exclude<DialogKind, null>; o
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [onClose]);
+  if (abstract || kind === 'register') return <div className="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true"><div className="modal-card soft-shadow w-full max-w-lg rounded-[28px] bg-[hsl(var(--background))] p-8 sm:p-10"><button onClick={onClose} className="focus-ring float-right flex h-9 w-9 items-center justify-center rounded-full bg-[hsl(var(--muted))]" aria-label="Close dialog"><X size={18} /></button><p className="clear-both font-mono-label text-[10px] uppercase tracking-[.2em] text-[hsl(var(--primary))]">{abstract ? 'Call for papers' : 'Participation'}</p><h2 className="mt-3 font-display text-5xl leading-[.94]">{abstract ? 'Bring your work to Batam.' : 'Join the gathering.'}</h2><p className="mt-4 text-sm leading-6 text-[hsl(var(--muted-foreground))]">{abstract ? 'Use the online submission form to send your abstract or full paper.' : 'Complete your registration online and keep the code for payment and status updates.'}</p><a href={abstract ? '#submission' : '#registration'} onClick={onClose} className="focus-ring mt-7 inline-flex w-full items-center justify-center gap-3 rounded-full bg-[hsl(var(--primary))] px-5 py-4 font-mono-label text-[10px] uppercase tracking-[.17em] text-[hsl(var(--primary-foreground))]">{abstract ? 'Open submission form' : 'Open registration form'} <ArrowUpRight size={15} /></a></div></div>;
   if (sent) return <div className="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true"><div className="modal-card soft-shadow w-full max-w-lg rounded-[28px] bg-[hsl(var(--background))] p-8 text-center sm:p-12"><div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))]"><Check size={28} /></div><p className="mt-6 font-mono-label text-[10px] uppercase tracking-[.2em] text-[hsl(var(--primary))]">Received with thanks</p><h2 className="mt-3 font-display text-5xl leading-none">You are on the list.</h2><p className="mx-auto mt-4 max-w-sm text-sm leading-6 text-[hsl(var(--muted-foreground))]">{abstract ? 'Your interest in presenting at BUICH 2026 has been recorded. Submission details will be shared when available.' : 'The organizing committee will share the next steps and official links when they are available.'}</p><button onClick={onClose} className="focus-ring magnetic mt-8 rounded-full bg-[hsl(var(--primary))] px-7 py-3 font-mono-label text-[10px] uppercase tracking-[.16em] text-[hsl(var(--primary-foreground))]" data-testid="button-finish-dialog">Close</button></div></div>;
   return <div className="modal-backdrop fixed inset-0 z-50 flex items-center justify-center overflow-y-auto p-4" role="dialog" aria-modal="true" aria-label={title} onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}><div className="modal-card soft-shadow relative my-4 w-full max-w-xl rounded-[28px] bg-[hsl(var(--background))] p-7 sm:p-10"><button onClick={onClose} className="focus-ring absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full bg-[hsl(var(--muted))] text-[hsl(var(--foreground))]" aria-label="Close dialog" data-testid="button-close-dialog"><X size={18} /></button><p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-[hsl(var(--primary))]">{abstract ? 'Call for papers' : newsletter ? 'Conference updates' : language === 'ID' ? 'Pendaftaran peserta' : 'Participation'}</p><h2 className="mt-3 max-w-md font-display text-5xl leading-[.94]">{title}</h2><p className="mt-4 max-w-lg text-sm leading-6 text-[hsl(var(--muted-foreground))]">{abstract ? 'The official submission link and important dates are to be announced. Register your interest and we will notify you when the portal opens.' : newsletter ? 'Leave your email for official updates from the BUICH 2026 organizing committee.' : 'Registration details, fees, and the official registration link are to be announced by the organizing committee.'}</p><form className="mt-7 space-y-4" onSubmit={(event) => { event.preventDefault(); setSent(true); }}>{!newsletter && <label className="block"><span className="font-mono-label text-[10px] uppercase tracking-[.15em] text-[hsl(var(--muted-foreground))]">Full name</span><input required className="mt-2 w-full rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card)/.4)] px-4 py-3 text-sm outline-none focus:border-[hsl(var(--primary))]" placeholder="Your name" data-testid="input-full-name" /></label>}<label className="block"><span className="font-mono-label text-[10px] uppercase tracking-[.15em] text-[hsl(var(--muted-foreground))]">Email address</span><input required type="email" className="mt-2 w-full rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card)/.4)] px-4 py-3 text-sm outline-none focus:border-[hsl(var(--primary))]" placeholder="you@institution.org" data-testid="input-email" /></label>{!newsletter && <label className="block"><span className="font-mono-label text-[10px] uppercase tracking-[.15em] text-[hsl(var(--muted-foreground))]">Participation format</span><select className="mt-2 w-full rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card)/.4)] px-4 py-3 text-sm outline-none focus:border-[hsl(var(--primary))]" defaultValue="hybrid" data-testid="select-participation-format"><option value="hybrid">Hybrid / undecided</option><option value="onsite">On-site at Batam University</option><option value="online">Online via Zoom Meeting</option></select></label>}{abstract && <label className="block"><span className="font-mono-label text-[10px] uppercase tracking-[.15em] text-[hsl(var(--muted-foreground))]">Contribution type</span><select className="mt-2 w-full rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card)/.4)] px-4 py-3 text-sm outline-none focus:border-[hsl(var(--primary))]" defaultValue="oral" data-testid="select-contribution-type"><option value="oral">Oral presentation</option><option value="poster">Poster presentation</option></select></label>}<button className="focus-ring magnetic mt-3 inline-flex w-full items-center justify-center gap-3 rounded-full bg-[hsl(var(--primary))] px-5 py-4 font-mono-label text-[10px] uppercase tracking-[.17em] text-[hsl(var(--primary-foreground))]" data-testid="button-submit-dialog">{abstract ? 'Register interest' : newsletter ? 'Subscribe to updates' : 'Continue'} <ArrowUpRight size={15} /></button></form></div></div>;
 }
@@ -271,6 +284,220 @@ function ScheduleTimeline({ entries }: { entries: string[][] }) {
   );
 }
 
+type RegistrationFormState = {
+  fullName: string;
+  email: string;
+  institution: string;
+  country: string;
+  role: string;
+  participationType: 'onsite' | 'online' | 'hybrid';
+  registrationType: string;
+};
+
+const initialRegistrationForm: RegistrationFormState = {
+  fullName: '',
+  email: '',
+  institution: '',
+  country: '',
+  role: '',
+  participationType: 'hybrid',
+  registrationType: 'Participant',
+};
+
+async function requestJson<T>(input: RequestInfo | URL, init?: RequestInit): Promise<T> {
+  const response = await fetch(input, init);
+  const body = (await response.json().catch(() => ({}))) as { error?: string };
+  if (!response.ok) throw new Error(body.error || 'Something went wrong. Please try again.');
+  return body as T;
+}
+
+function RegistrationForm() {
+  const [form, setForm] = useState(initialRegistrationForm);
+  const [result, setResult] = useState<{ code: string; message: string } | null>(null);
+  const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  const submit = async (event: FormEvent) => {
+    event.preventDefault();
+    setSaving(true);
+    setError('');
+    try {
+      const response = await requestJson<{ registration: { registrationCode: string }; message: string }>('/api/registrations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+      setResult({ code: response.registration.registrationCode, message: response.message });
+      setForm(initialRegistrationForm);
+    } catch (submitError) {
+      setError(submitError instanceof Error ? submitError.message : 'Registration could not be submitted.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="rounded-[28px] bg-[hsl(var(--background))] p-6 soft-shadow sm:p-8">
+      {result ? (
+        <div className="rounded-2xl border border-[#91c9b1] bg-[#e8f4ee] p-6">
+          <CheckCircle2 className="text-[#3f8568]" size={28} />
+          <h3 className="mt-4 font-display text-3xl">Registration received</h3>
+          <p className="mt-3 text-sm leading-6 text-[hsl(var(--muted-foreground))]">{result.message} Save your registration code for payment and submission tracking.</p>
+          <p className="mt-5 rounded-xl bg-white px-4 py-4 font-mono-label text-lg tracking-[.14em] text-[hsl(var(--primary))]">{result.code}</p>
+          <button className="focus-ring mt-5 text-sm font-bold text-[hsl(var(--primary))]" onClick={() => setResult(null)}>Register another participant</button>
+        </div>
+      ) : (
+        <form className="grid gap-4 sm:grid-cols-2" onSubmit={submit}>
+          <label className="sm:col-span-2"><span className="form-label">Full name</span><input required value={form.fullName} onChange={(event) => setForm({ ...form, fullName: event.target.value })} className="form-input" placeholder="Your full name" data-testid="input-registration-name" /></label>
+          <label><span className="form-label">Email address</span><input required type="email" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} className="form-input" placeholder="you@institution.org" data-testid="input-registration-email" /></label>
+          <label><span className="form-label">Institution</span><input required value={form.institution} onChange={(event) => setForm({ ...form, institution: event.target.value })} className="form-input" placeholder="University or organization" data-testid="input-registration-institution" /></label>
+          <label><span className="form-label">Country</span><input required value={form.country} onChange={(event) => setForm({ ...form, country: event.target.value })} className="form-input" placeholder="Indonesia" data-testid="input-registration-country" /></label>
+          <label><span className="form-label">Role / profession</span><input required value={form.role} onChange={(event) => setForm({ ...form, role: event.target.value })} className="form-input" placeholder="Researcher, student, clinician..." data-testid="input-registration-role" /></label>
+          <label><span className="form-label">Registration category</span><select value={form.registrationType} onChange={(event) => setForm({ ...form, registrationType: event.target.value })} className="form-input" data-testid="select-registration-type"><option>Participant</option><option>Presenter</option><option>Student</option><option>Committee / invited guest</option></select></label>
+          <label><span className="form-label">Participation format</span><select value={form.participationType} onChange={(event) => setForm({ ...form, participationType: event.target.value as RegistrationFormState['participationType'] })} className="form-input" data-testid="select-registration-format"><option value="hybrid">Hybrid / undecided</option><option value="onsite">On-site at Batam University</option><option value="online">Online via Zoom Meeting</option></select></label>
+          {error && <p className="sm:col-span-2 rounded-xl bg-[#fff0ee] px-4 py-3 text-sm text-[#b34f46]">{error}</p>}
+          <button disabled={saving} className="focus-ring magnetic mt-2 inline-flex items-center justify-center gap-3 rounded-full bg-[hsl(var(--primary))] px-6 py-4 text-sm font-bold text-[hsl(var(--primary-foreground))] disabled:opacity-60 sm:col-span-2" data-testid="button-submit-registration">{saving ? 'Sending...' : 'Submit registration'} <ArrowUpRight size={16} /></button>
+        </form>
+      )}
+    </div>
+  );
+}
+
+function StatusLookup() {
+  const [email, setEmail] = useState('');
+  const [code, setCode] = useState('');
+  const [result, setResult] = useState<{ registration: { status: string; paymentStatus: string; fullName: string; registrationCode: string }; submissions: { title: string; status: string }[] } | null>(null);
+  const [error, setError] = useState('');
+  const lookup = async (event: FormEvent) => {
+    event.preventDefault();
+    setError('');
+    try {
+      setResult(await requestJson(`/api/registrations/status?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`));
+    } catch (lookupError) {
+      setResult(null);
+      setError(lookupError instanceof Error ? lookupError.message : 'Status not found.');
+    }
+  };
+  return <div className="rounded-[28px] border border-[hsl(var(--border))] p-6 sm:p-8">
+    <p className="font-mono-label text-[10px] uppercase tracking-[.18em] text-[hsl(var(--primary))]">Already registered?</p>
+    <h3 className="mt-3 font-display text-3xl">Track your application</h3>
+    <form className="mt-6 grid gap-3 sm:grid-cols-[1fr_.7fr_auto]" onSubmit={lookup}><input required type="email" value={email} onChange={(event) => setEmail(event.target.value)} className="form-input" placeholder="Email address" /><input required value={code} onChange={(event) => setCode(event.target.value)} className="form-input font-mono-label uppercase" placeholder="BUICH-XXXXXXXX" /><button className="focus-ring rounded-xl bg-[hsl(var(--primary))] px-5 py-3 text-sm font-bold text-[hsl(var(--primary-foreground))]">Check status</button></form>
+    {error && <p className="mt-4 text-sm text-[#b34f46]">{error}</p>}
+    {result && <div className="mt-6 grid gap-3 rounded-2xl bg-[hsl(var(--muted))] p-5 text-sm"><p><strong>{result.registration.fullName}</strong> · {result.registration.registrationCode}</p><p>Registration: <span className="font-bold text-[hsl(var(--primary))]">{result.registration.status.replace('_', ' ')}</span></p><p>Payment: <span className="font-bold text-[hsl(var(--primary))]">{result.registration.paymentStatus}</span></p>{result.submissions.length > 0 && <div className="border-t border-[hsl(var(--border))] pt-3"><p className="font-semibold">Submissions</p>{result.submissions.map((submission) => <p key={submission.title} className="mt-2 text-[hsl(var(--muted-foreground))]">{submission.title} · {submission.status.replace('_', ' ')}</p>)}</div>}</div>}
+  </div>;
+}
+
+function SubmissionForm() {
+  const [form, setForm] = useState({ registrationCode: '', fullName: '', email: '', title: '', submissionType: 'abstract', abstractText: '', keywords: '' });
+  const [file, setFile] = useState<File | null>(null);
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  const downloadTemplate = () => {
+    const template = '<html><body><h1>BUICH 2026 Article Template</h1><p>Title:</p><p>Author(s) and affiliation:</p><p>Abstract (150–250 words):</p><p>Keywords:</p><p>1. Introduction</p><p>2. Methods</p><p>3. Results</p><p>4. Discussion</p><p>5. Conclusion</p><p>References</p></body></html>';
+    const url = URL.createObjectURL(new Blob([template], { type: 'application/msword' }));
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'BUICH-2026-Article-Template.doc';
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const submit = async (event: FormEvent) => {
+    event.preventDefault();
+    setSaving(true);
+    setError('');
+    setMessage('');
+    try {
+      let filePath = '';
+      if (file) {
+        const contentType = file.type || (file.name.endsWith('.pdf') ? 'application/pdf' : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        const upload = await requestJson<{ uploadURL: string; objectPath: string }>('/api/storage/uploads/request-url', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: file.name, size: file.size, contentType, registrationCode: form.registrationCode }),
+        });
+        const uploadResponse = await fetch(upload.uploadURL, { method: 'PUT', headers: { 'Content-Type': contentType }, body: file });
+        if (!uploadResponse.ok) throw new Error('The paper file could not be uploaded.');
+        filePath = upload.objectPath;
+      }
+      await requestJson('/api/submissions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...form, fileName: file?.name, filePath }),
+      });
+      setMessage('Submission received. The committee will update the review status in your registration record.');
+      setForm({ registrationCode: '', fullName: '', email: '', title: '', submissionType: 'abstract', abstractText: '', keywords: '' });
+      setFile(null);
+    } catch (submitError) {
+      setError(submitError instanceof Error ? submitError.message : 'Submission could not be sent.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return <div className="rounded-[28px] bg-[hsl(var(--background))] p-6 soft-shadow sm:p-8">
+    <div className="flex flex-wrap items-start justify-between gap-4"><div><p className="font-mono-label text-[10px] uppercase tracking-[.18em] text-[hsl(var(--primary))]">Online submission</p><h3 className="mt-3 font-display text-3xl">Send abstract or full paper</h3></div><button type="button" onClick={downloadTemplate} className="focus-ring inline-flex items-center gap-2 rounded-full border border-[hsl(var(--primary)/.25)] px-4 py-3 text-xs font-bold text-[hsl(var(--primary))]"><Download size={15} /> Download article template</button></div>
+    <form className="mt-7 grid gap-4 sm:grid-cols-2" onSubmit={submit}><label><span className="form-label">Registration code</span><input required value={form.registrationCode} onChange={(event) => setForm({ ...form, registrationCode: event.target.value })} className="form-input font-mono-label uppercase" placeholder="BUICH-XXXXXXXX" /></label><label><span className="form-label">Email address</span><input required type="email" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} className="form-input" placeholder="Registered email" /></label><label><span className="form-label">Presenter name</span><input required value={form.fullName} onChange={(event) => setForm({ ...form, fullName: event.target.value })} className="form-input" placeholder="Full name" /></label><label><span className="form-label">Submission type</span><select value={form.submissionType} onChange={(event) => setForm({ ...form, submissionType: event.target.value })} className="form-input"><option value="abstract">Abstract</option><option value="full-paper">Full paper</option></select></label><label className="sm:col-span-2"><span className="form-label">Paper title</span><input required value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} className="form-input" placeholder="Enter the title of your work" /></label><label className="sm:col-span-2"><span className="form-label">Abstract / manuscript summary</span><textarea required minLength={80} value={form.abstractText} onChange={(event) => setForm({ ...form, abstractText: event.target.value })} className="form-input min-h-36 resize-y" placeholder="At least 80 characters. Use the IMRAD structure for full papers." /></label><label><span className="form-label">Keywords</span><input value={form.keywords} onChange={(event) => setForm({ ...form, keywords: event.target.value })} className="form-input" placeholder="emergency care, occupational health" /></label><label><span className="form-label">File (.pdf, .doc, .docx)</span><input type="file" accept=".pdf,.doc,.docx" onChange={(event) => setFile(event.target.files?.[0] || null)} className="form-input file:mr-3 file:rounded-full file:border-0 file:bg-[hsl(var(--muted))] file:px-3 file:py-2 file:text-xs file:font-bold" /></label>{message && <p className="sm:col-span-2 rounded-xl bg-[#e8f4ee] px-4 py-3 text-sm text-[#3f8568]">{message}</p>}{error && <p className="sm:col-span-2 rounded-xl bg-[#fff0ee] px-4 py-3 text-sm text-[#b34f46]">{error}</p>}<button disabled={saving} className="focus-ring inline-flex items-center justify-center gap-3 rounded-full bg-[hsl(var(--primary))] px-6 py-4 text-sm font-bold text-[hsl(var(--primary-foreground))] disabled:opacity-60 sm:col-span-2">{saving ? 'Uploading...' : 'Submit to committee'} <FileUp size={16} /></button></form>
+  </div>;
+}
+
+function ConferenceOperations() {
+  return <>
+    <section id="registration" className="scroll-reveal bg-[hsl(var(--card))] px-5 py-24 sm:px-8 sm:py-32 lg:px-12"><div className="mx-auto max-w-[1250px]"><div className="grid gap-10 lg:grid-cols-[.65fr_1.35fr]"><div><p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-[hsl(var(--primary))]">06 / Registration</p><h2 className="mt-5 font-display text-5xl leading-[.93] tracking-[-.04em] sm:text-7xl">Your place in the <em className="text-[hsl(var(--primary))]">room.</em></h2><p className="mt-7 text-sm leading-7 text-[hsl(var(--muted-foreground))]">Submit your details once, keep the registration code, and use it to track payment and paper review updates.</p></div><div className="grid gap-6"><RegistrationForm /><StatusLookup /></div></div></div></section>
+    <section id="submission" className="scroll-reveal bg-[hsl(var(--background))] px-5 py-24 sm:px-8 sm:py-32 lg:px-12"><div className="mx-auto max-w-[1250px]"><div className="grid gap-10 lg:grid-cols-[.65fr_1.35fr]"><div><p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-[hsl(var(--primary))]">07 / Submission</p><h2 className="mt-5 font-display text-5xl leading-[.93] tracking-[-.04em] sm:text-7xl">From idea to <em className="text-[hsl(var(--primary))]">evidence.</em></h2><div className="mt-8 grid gap-4 text-sm leading-6 text-[hsl(var(--muted-foreground))]"><p><strong className="text-[hsl(var(--foreground))]">01</strong> Register and keep your code.</p><p><strong className="text-[hsl(var(--foreground))]">02</strong> Download the official article template.</p><p><strong className="text-[hsl(var(--foreground))]">03</strong> Submit an abstract or full paper online.</p><p><strong className="text-[hsl(var(--foreground))]">04</strong> Follow review and acceptance updates.</p></div></div><SubmissionForm /></div></div></section>
+    <section id="committee" className="scroll-reveal bg-[hsl(var(--primary))] px-5 py-24 text-[hsl(var(--primary-foreground))] sm:px-8 sm:py-32 lg:px-12"><div className="mx-auto max-w-[1250px]"><div className="grid gap-10 lg:grid-cols-[.7fr_1.3fr]"><div><p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-[hsl(var(--accent))]">08 / Committee</p><h2 className="mt-5 font-display text-5xl leading-[.93] sm:text-7xl">The people behind the <em>gathering.</em></h2></div><div className="grid gap-3 sm:grid-cols-2"><div className="committee-card"><span>Steering committee</span><strong>Batam University leadership</strong></div><div className="committee-card"><span>Organizing committee</span><strong>LPPM UNIBA · Faculty of Medicine</strong></div><div className="committee-card"><span>Scientific committee</span><strong>Reviewers and subject experts</strong></div><div className="committee-card"><span>Secretariat</span><strong>Registration · submissions · delegates</strong></div></div></div></div></section>
+    <section id="payment" className="scroll-reveal bg-[hsl(var(--card))] px-5 py-24 sm:px-8 sm:py-32 lg:px-12"><div className="mx-auto max-w-[1250px]"><div className="grid gap-10 lg:grid-cols-[.7fr_1.3fr]"><div><p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-[hsl(var(--primary))]">09 / Payment information</p><h2 className="mt-5 font-display text-5xl leading-[.93] sm:text-7xl">Clear steps. <em className="text-[hsl(var(--primary))]">Safe payment.</em></h2><p className="mt-7 max-w-md text-sm leading-7 text-[hsl(var(--muted-foreground))]">Registration fees, official account details, and payment deadlines will be published by the committee. Never transfer funds to an unofficial personal account.</p></div><div className="grid gap-4 sm:grid-cols-2"><div className="info-card"><CreditCard className="text-[hsl(var(--primary))]" size={23} /><h3>Fee categories</h3><p>Participant, presenter, student, and invited guest fees are to be announced.</p></div><div className="info-card"><CheckCircle2 className="text-[hsl(var(--primary))]" size={23} /><h3>Payment procedure</h3><p>Use your registration code as the payment reference, then submit proof through the official committee channel.</p></div><div className="info-card"><Search className="text-[hsl(var(--primary))]" size={23} /><h3>Transaction status</h3><p>Check payment status with your registration code after the committee verifies the transaction.</p></div><div className="info-card"><ShieldCheck className="text-[hsl(var(--primary))]" size={23} /><h3>Security note</h3><p>Account name, bank, QRIS, and receipt instructions will only be confirmed on this official page.</p></div></div></div></div></section>
+    <section id="venue" className="scroll-reveal bg-[hsl(var(--background))] px-5 py-24 sm:px-8 sm:py-32 lg:px-12"><div className="mx-auto max-w-[1250px]"><div className="grid gap-10 lg:grid-cols-[.7fr_1.3fr]"><div><p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-[hsl(var(--primary))]">10 / Venue & contact</p><h2 className="mt-5 font-display text-5xl leading-[.93] sm:text-7xl">Arrive ready for <em className="text-[hsl(var(--primary))]">Batam.</em></h2><p className="mt-7 text-sm leading-7 text-[hsl(var(--muted-foreground))]">The conference will be held in Graha Bintang and Rumengan Hall, Batam University, with a Zoom option for online delegates.</p><a className="focus-ring mt-7 inline-flex items-center gap-2 rounded-full bg-[hsl(var(--primary))] px-5 py-3 text-sm font-bold text-[hsl(var(--primary-foreground))]" href="https://maps.google.com/?q=Batam+University" target="_blank" rel="noreferrer">Open Google Maps <ArrowUpRight size={15} /></a></div><div className="grid gap-4 sm:grid-cols-2"><div className="info-card"><MapPin className="text-[hsl(var(--primary))]" size={23} /><h3>Venue</h3><p>Graha Bintang and Rumengan Hall, Batam University, Batam.</p></div><div className="info-card"><Hotel className="text-[hsl(var(--primary))]" size={23} /><h3>Hotels & accommodation</h3><p>Recommended hotel list and booking guidance will be announced by the secretariat.</p></div><div className="info-card"><Plane className="text-[hsl(var(--primary))]" size={23} /><h3>Airport & travel</h3><p>Hang Nadim International Airport is the main arrival point for international participants.</p></div><div className="info-card"><Mail className="text-[hsl(var(--primary))]" size={23} /><h3>Participant support</h3><p>Committee contact, airport transfer, and travel information are to be announced.</p></div></div></div></div></section>
+  </>;
+}
+
+type AdminRegistration = {
+  id: string;
+  registrationCode: string;
+  fullName: string;
+  email: string;
+  institution: string;
+  participationType: string;
+  registrationType: string;
+  status: string;
+  paymentStatus: string;
+  createdAt: string;
+};
+
+function AdminDashboard() {
+  const [rows, setRows] = useState<AdminRegistration[]>([]);
+  const [stats, setStats] = useState<Record<string, number>>({});
+  const [filter, setFilter] = useState('all');
+  const [adminKey, setAdminKey] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+  const headers: Record<string, string> = adminKey ? { 'x-admin-key': adminKey } : {};
+  const load = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const [statsResponse, rowsResponse] = await Promise.all([
+        requestJson<Record<string, number>>('/api/admin/stats', { headers }),
+        requestJson<{ registrations: AdminRegistration[] }>(`/api/admin/registrations${filter === 'all' ? '' : `?status=${filter}`}`, { headers }),
+      ]);
+      setStats(statsResponse);
+      setRows(rowsResponse.registrations);
+    } catch (loadError) {
+      setError(loadError instanceof Error ? loadError.message : 'Admin data could not be loaded.');
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => { void load(); }, [filter, adminKey]);
+  const updateStatus = async (id: string, status: string, paymentStatus: string) => {
+    await requestJson(`/api/admin/registrations/${id}/status`, { method: 'PATCH', headers: { 'Content-Type': 'application/json', ...headers }, body: JSON.stringify({ status, paymentStatus }) });
+    await load();
+  };
+  return <div className="min-h-[100dvh] bg-[hsl(var(--muted))] px-5 py-8 text-[hsl(var(--foreground))] sm:px-8 lg:px-12"><div className="mx-auto max-w-[1400px]"><div className="flex flex-wrap items-center justify-between gap-5"><div className="flex items-center gap-3"><BrandMark /><div><p className="font-mono-label text-[10px] uppercase tracking-[.18em] text-[hsl(var(--primary))]">BUICH 2026</p><h1 className="font-display text-4xl">Admin dashboard</h1></div></div><div className="flex items-center gap-2"><a href="/" className="focus-ring rounded-full bg-[hsl(var(--background))] px-4 py-3 text-sm font-bold">View website</a><button onClick={() => void load()} className="focus-ring rounded-full bg-[hsl(var(--primary))] p-3 text-[hsl(var(--primary-foreground))]" aria-label="Refresh dashboard"><RefreshCw size={17} /></button></div></div><div className="mt-8 rounded-2xl border border-[hsl(var(--border))] bg-[hsl(var(--background))] p-4"><div className="flex flex-wrap items-center gap-3"><ShieldCheck className="text-[hsl(var(--primary))]" size={18} /><p className="text-sm text-[hsl(var(--muted-foreground))]">Development preview is open for workspace testing. In production, enter the configured admin access key.</p><input value={adminKey} onChange={(event) => setAdminKey(event.target.value)} className="form-input max-w-xs" placeholder="Production admin key" type="password" /></div></div>{error && <div className="mt-6 rounded-2xl bg-[#fff0ee] p-4 text-sm text-[#b34f46]">{error}</div>}<div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">{[['total', 'Registrations'], ['pending', 'Pending review'], ['accepted', 'Accepted'], ['paid', 'Paid'], ['submissions', 'Submissions']].map(([key, label]) => <div key={key} className="rounded-2xl bg-[hsl(var(--background))] p-5"><p className="font-mono-label text-[9px] uppercase tracking-[.15em] text-[hsl(var(--muted-foreground))]">{label}</p><p className="mt-3 font-display text-4xl text-[hsl(var(--primary))]">{stats[key] ?? '—'}</p></div>)}</div><div className="mt-8 rounded-[24px] bg-[hsl(var(--background))] p-5 sm:p-7"><div className="flex flex-wrap items-end justify-between gap-4"><div><p className="font-mono-label text-[10px] uppercase tracking-[.18em] text-[hsl(var(--primary))]">Registration queue</p><h2 className="mt-2 font-display text-3xl">Review participants</h2></div><select value={filter} onChange={(event) => setFilter(event.target.value)} className="form-input max-w-xs"><option value="all">All statuses</option><option value="pending">Pending</option><option value="under_review">Under review</option><option value="accepted">Accepted</option><option value="waitlisted">Waitlisted</option><option value="rejected">Rejected</option></select></div>{loading ? <p className="py-10 text-sm text-[hsl(var(--muted-foreground))]">Loading registrations...</p> : rows.length === 0 ? <p className="py-10 text-sm text-[hsl(var(--muted-foreground))]">No registrations in this view.</p> : <div className="mt-6 overflow-x-auto"><table className="w-full min-w-[900px] text-left text-sm"><thead><tr className="border-b border-[hsl(var(--border))] text-[10px] uppercase tracking-[.12em] text-[hsl(var(--muted-foreground))]"><th className="px-3 py-3">Participant</th><th className="px-3 py-3">Category</th><th className="px-3 py-3">Format</th><th className="px-3 py-3">Registration</th><th className="px-3 py-3">Payment</th><th className="px-3 py-3">Actions</th></tr></thead><tbody>{rows.map((row) => <tr key={row.id} className="border-b border-[hsl(var(--border))] last:border-0"><td className="px-3 py-4"><strong>{row.fullName}</strong><span className="mt-1 block text-xs text-[hsl(var(--muted-foreground))]">{row.email}<br />{row.institution}</span></td><td className="px-3 py-4">{row.registrationType}</td><td className="px-3 py-4">{row.participationType}</td><td className="px-3 py-4"><span className="font-mono-label text-xs text-[hsl(var(--primary))]">{row.registrationCode}</span><span className="mt-1 block text-xs">{row.status.replace('_', ' ')}</span></td><td className="px-3 py-4">{row.paymentStatus}</td><td className="px-3 py-4"><div className="flex flex-wrap gap-2"><select value={row.status} onChange={(event) => void updateStatus(row.id, event.target.value, row.paymentStatus)} className="rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--background))] px-2 py-2 text-xs"><option value="pending">Pending</option><option value="under_review">Under review</option><option value="accepted">Accepted</option><option value="waitlisted">Waitlisted</option><option value="rejected">Rejected</option></select><select value={row.paymentStatus} onChange={(event) => void updateStatus(row.id, row.status, event.target.value)} className="rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--background))] px-2 py-2 text-xs"><option value="unpaid">Unpaid</option><option value="pending">Payment pending</option><option value="paid">Paid</option><option value="refunded">Refunded</option></select></div></td></tr>)}</tbody></table></div>}</div></div></div>;
+}
+
 function Home() {
   const [language, setLanguage] = useState<Language>('EN');
   const [menuOpen, setMenuOpen] = useState(false);
@@ -299,6 +526,7 @@ function Home() {
       <section id="topics" className="scroll-reveal bg-[hsl(var(--background))] px-5 py-24 sm:px-8 sm:py-32 lg:px-12" aria-labelledby="topics-title"><div className="mx-auto max-w-[1250px]"><div className="grid gap-12 lg:grid-cols-[.72fr_1.28fr] lg:gap-20"><div><p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-[hsl(var(--primary))]">04 / Six scopes</p><h2 id="topics-title" className="mt-5 max-w-md font-display text-5xl leading-[.93] tracking-[-.04em] sm:text-7xl">Bring your<br /><em className="text-[hsl(var(--primary))]">discipline.</em></h2><p className="mt-8 max-w-sm text-sm leading-7 text-[hsl(var(--muted-foreground))]">Papers should align with the conference theme and one of the official scopes below. Browse the conversation before you submit.</p><div className="mt-10 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-2">{scopeData.map((scope, index) => <button key={scope.title} onClick={() => setActiveScope(index)} className={`focus-ring flex items-center gap-2 rounded-xl border p-3 text-left text-[10px] font-bold uppercase tracking-[.08em] transition-all ${activeScope === index ? 'border-[hsl(var(--primary))] bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))]' : 'border-[hsl(var(--border))] text-[hsl(var(--muted-foreground))] hover:border-[hsl(var(--primary))]'}`} data-testid={`button-scope-${index}`}>{scope.index}<span className="truncate">{scope.title}</span></button>)}</div></div><div className="rounded-[28px] bg-[hsl(var(--card))] p-6 sm:p-9"><div className="flex items-start justify-between gap-4"><div><p className="font-mono-label text-[10px] uppercase tracking-[.15em] text-[hsl(var(--primary))]">{scopeData[activeScope].index} / scope</p><h3 className="mt-4 font-display text-5xl leading-none">{scopeData[activeScope].title}</h3></div><div className="breathe mt-2 flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))]">{(() => { const Icon = scopeData[activeScope].icon; return <Icon size={21} />; })()}</div></div><p className="mt-7 max-w-2xl text-base leading-7 text-[hsl(var(--muted-foreground))]">{scopeData[activeScope].description}</p><div className="mt-10 grid gap-0 border-t border-[hsl(var(--border))] sm:grid-cols-2">{scopeData[activeScope].topics.map((topic, index) => <div key={topic} className="flex gap-3 border-b border-[hsl(var(--border))] py-4 text-sm leading-5"><span className="font-mono-label text-[10px] text-[hsl(var(--primary))]">{String(index + 1).padStart(2, '0')}</span>{topic}</div>)}</div></div></div></div></section>
       <section id="papers" className="scroll-reveal bg-[hsl(var(--card))] px-5 py-24 sm:px-8 sm:py-32 lg:px-12" aria-labelledby="papers-title"><div className="mx-auto max-w-[1250px]"><div className="grid gap-12 lg:grid-cols-[.8fr_1.2fr] lg:gap-24"><div><p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-[hsl(var(--primary))]">05 / Call for papers</p><h2 id="papers-title" className="mt-5 max-w-xl font-display text-5xl leading-[.93] tracking-[-.04em] sm:text-7xl">Evidence that can <em className="text-[hsl(var(--primary))]">move.</em></h2><p className="mt-8 max-w-md text-sm leading-7 text-[hsl(var(--muted-foreground))]">The committee invites academics, researchers, practitioners, students, and professionals to submit original scientific papers aligned with the conference theme.</p><button onClick={() => setDialog('abstract')} className="focus-ring magnetic mt-8 inline-flex items-center gap-3 rounded-full bg-[hsl(var(--primary))] px-6 py-4 text-sm font-bold text-[hsl(var(--primary-foreground))]" data-testid="button-papers-submit">Submit an abstract <ArrowUpRight size={16} /></button></div><div className="grid gap-4"><div className="rounded-[22px] bg-[hsl(var(--background))] p-6 sm:grid sm:grid-cols-[1fr_1.5fr] sm:gap-6"><div><FileText className="text-[hsl(var(--primary))]" size={22} /><h3 className="mt-4 font-display text-3xl">Manuscript requirements</h3></div><ul className="mt-5 list-disc space-y-2 pl-5 text-sm leading-6 text-[hsl(var(--muted-foreground))] sm:mt-0"><li>Written in English with an IMRAD structure.</li><li>3,000–5,000 words; Times New Roman, size 12; 1.5 spacing.</li><li>Official committee template required; .doc / .docx format.</li><li>Original work not previously published. Primary research is preferred.</li></ul></div><div className="rounded-[22px] bg-[hsl(var(--background))] p-6 sm:grid sm:grid-cols-[1fr_1.5fr] sm:gap-6"><div><Check className="text-[hsl(var(--primary))]" size={22} /><h3 className="mt-4 font-display text-3xl">Review + publication</h3></div><div className="mt-5 text-sm leading-7 text-[hsl(var(--muted-foreground))] sm:mt-0"><p>All submissions undergo double-blind peer review by qualified reviewers, evaluated for originality, relevance, scientific quality, and clarity.</p><p className="mt-3">Accepted papers will be published in conference proceedings (ISBN). Selected papers may be recommended for SINTA-indexed national journals or international journals, subject to additional review.</p></div></div><div className="rounded-[22px] bg-[hsl(var(--background))] p-6 sm:grid sm:grid-cols-[1fr_1.5fr] sm:gap-6"><div><CalendarDays className="text-[hsl(var(--primary))]" size={22} /><h3 className="mt-4 font-display text-3xl">Important dates</h3></div><div className="mt-5 space-y-3 text-sm text-[hsl(var(--muted-foreground))] sm:mt-0"><p className="flex justify-between gap-5 border-b border-[hsl(var(--border))] pb-3"><span>Abstract submission deadline</span><span className="font-mono-label text-[10px] uppercase text-[hsl(var(--primary))]">To be announced</span></p><p className="flex justify-between gap-5 border-b border-[hsl(var(--border))] pb-3"><span>Acceptance notification</span><span className="font-mono-label text-[10px] uppercase text-[hsl(var(--primary))]">To be announced</span></p><p className="flex justify-between gap-5 border-b border-[hsl(var(--border))] pb-3"><span>Full paper submission</span><span className="font-mono-label text-[10px] uppercase text-[hsl(var(--primary))]">To be announced</span></p><p className="flex justify-between gap-5"><span>Submission link</span><span className="font-mono-label text-[10px] uppercase text-[hsl(var(--primary))]">To be announced</span></p></div></div></div></div></div></section>
       <section className="scroll-reveal relative overflow-hidden bg-[hsl(var(--primary))] px-5 py-20 text-[hsl(var(--primary-foreground))] sm:px-8 sm:py-28 lg:px-12"><div className="absolute -right-20 -top-28 h-[430px] w-[430px] rounded-full border border-[hsl(var(--primary-foreground)/.16)]" /><div className="relative mx-auto flex max-w-[1250px] flex-col justify-between gap-8 md:flex-row md:items-end"><div><p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-[hsl(var(--accent))]">The invitation</p><h2 className="mt-4 max-w-3xl font-display text-5xl leading-[.9] tracking-[-.04em] sm:text-7xl">What happens at work<br />shapes what happens <em>around it.</em></h2></div><button onClick={() => setDialog('register')} className="focus-ring magnetic inline-flex h-fit items-center gap-3 rounded-full border border-[hsl(var(--primary-foreground)/.7)] px-6 py-4 text-sm font-bold hover:bg-[hsl(var(--primary-foreground))] hover:text-[hsl(var(--primary))]" data-testid="button-cta-register">Register your interest <ArrowUpRight size={16} /></button></div></section>
+      <ConferenceOperations />
     </main>
     <footer id="contact" className="scroll-reveal bg-[hsl(var(--background))] px-5 pb-8 pt-20 sm:px-8 sm:pt-24 lg:px-12"><div className="mx-auto max-w-[1250px]"><div className="grid gap-14 lg:grid-cols-[1.2fr_.8fr_.8fr]"><div><div className="flex items-center gap-3"><BrandMark /><span className="font-mono-label text-[10px] uppercase leading-[1.2] tracking-[.14em]"><strong className="text-[hsl(var(--primary))]">The 1st BUICH</strong><br />International Conference on Health</span></div><h2 className="mt-10 max-w-xl font-display text-5xl leading-[.92] sm:text-6xl">A safer system<br /><em className="text-[hsl(var(--primary))]">starts together.</em></h2><p className="mt-7 max-w-sm text-sm leading-6 text-[hsl(var(--muted-foreground))]">Organized by the Institute of Research and Community Services, Batam University (LPPM UNIBA), in collaboration with the Faculty of Medicine, Batam University.</p></div><div><p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-[hsl(var(--primary))]">Navigate</p><div className="mt-6 grid gap-4 text-sm text-[hsl(var(--muted-foreground))]">{navItems.map(([label, href]) => <AppLink key={href} href={href} className="line-link w-fit">{label}</AppLink>)}</div></div><div><p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-[hsl(var(--primary))]">Official updates</p><p className="mt-6 text-sm leading-6 text-[hsl(var(--muted-foreground))]">Registration, submission links, meeting credentials, and remaining deadlines are to be announced by the committee.</p>{subscribed ? <p className="mt-6 flex items-center gap-2 text-sm text-[#4f997c]" data-testid="status-subscribed"><Check size={15} /> You are subscribed.</p> : <form className="mt-5 flex rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card)/.4)] px-4" onSubmit={(event) => { event.preventDefault(); if (email) setSubscribed(true); }}><input required type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="Email address" className="min-w-0 flex-1 bg-transparent py-3 text-sm outline-none placeholder:text-[hsl(var(--muted-foreground))]" data-testid="input-newsletter-email" /><button aria-label="Subscribe to updates" className="focus-ring text-[hsl(var(--primary))]" data-testid="button-newsletter-subscribe"><ArrowUpRight size={18} /></button></form>}<button onClick={() => setDialog('newsletter')} className="focus-ring mt-5 inline-flex items-center gap-2 text-xs font-bold text-[hsl(var(--primary))]" data-testid="button-open-newsletter">Open update form <ArrowUpRight size={13} /></button></div></div><div className="mt-16 grid gap-5 border-t border-[hsl(var(--border))] pt-6 text-sm text-[hsl(var(--muted-foreground))] sm:grid-cols-3"><div className="flex items-start gap-3"><MapPin size={16} className="mt-1 shrink-0 text-[hsl(var(--primary))]" /><span>Graha Bintang and Rumengan Hall<br />Batam University, Batam</span></div><div className="flex items-start gap-3"><Clock3 size={16} className="mt-1 shrink-0 text-[hsl(var(--primary))]" /><span>04–05 December 2026<br />08.00–16.00 GMT+7</span></div><div className="flex items-start gap-3"><Mail size={16} className="mt-1 shrink-0 text-[hsl(var(--primary))]" /><span>Committee contact<br /><span className="text-[hsl(var(--primary))]">To be announced</span></span></div></div><div className="mt-10 flex flex-col justify-between gap-3 border-t border-[hsl(var(--border))] pt-5 font-mono-label text-[9px] uppercase tracking-[.14em] text-[hsl(var(--muted-foreground))] sm:flex-row"><span>© 2026 Batam University International Conference on Health</span><span>Workers · communities · systems</span><span>Hybrid · Batam + Zoom</span></div></div></footer>
     {dialog && <Modal kind={dialog} onClose={() => setDialog(null)} language={language} />}
@@ -306,7 +534,7 @@ function Home() {
 }
 
 function Router() {
-  return <RoutedErrorBoundary><Switch><Route path="/" component={Home} /><Route component={NotFound} /></Switch></RoutedErrorBoundary>;
+  return <RoutedErrorBoundary><Switch><Route path="/" component={Home} /><Route path="/admin" component={AdminDashboard} /><Route component={NotFound} /></Switch></RoutedErrorBoundary>;
 }
 
 function RoutedErrorBoundary({ children }: { children: ReactNode }) {
