@@ -455,14 +455,14 @@ function ConferenceOperations() {
         <div className="grid gap-12 lg:grid-cols-[.75fr_1.25fr] lg:gap-24">
           <div>
             <p className="editorial-kicker">08 / Committee</p>
-            <h2 id="committee-title" className="mt-5 max-w-xl font-display text-5xl leading-[.92] tracking-[-.04em] text-[hsl(var(--foreground))] sm:text-7xl">A careful team<br />behind the <em className="text-[hsl(var(--editorial-amber))]">work.</em></h2>
-            <p className="mt-7 max-w-md text-sm leading-7 text-[hsl(var(--editorial-muted))]">The conference is convened by Batam University through its research, community service, and medical faculty partners. Names and appointments will be published as they are confirmed.</p>
+            <h2 id="committee-title" className="mt-5 max-w-xl font-display text-5xl leading-[.92] tracking-[-.04em] text-[hsl(var(--foreground))] sm:text-7xl">A careful team<br />behind the <em className="text-[hsl(var(--primary))]">work.</em></h2>
+            <p className="mt-7 max-w-md text-sm leading-7 text-[hsl(var(--muted-foreground))]">The conference is convened by Batam University through its research, community service, and medical faculty partners. Names and appointments will be published as they are confirmed.</p>
           </div>
           <div className="space-y-10">
             <div>
               <div className="mb-4 flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[hsl(var(--editorial-amber))] text-[hsl(var(--editorial-navy))]"><Award size={19} /></span>
-                <div><p className="editorial-kicker">Advisory Board</p><p className="mt-1 text-xs text-[hsl(var(--editorial-muted))]">Distinguished advisors guiding the conference</p></div>
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[hsl(var(--accent))] text-[hsl(var(--foreground))]"><Award size={19} /></span>
+                <div><p className="editorial-kicker">Advisory Board</p><p className="mt-1 text-xs text-[hsl(var(--muted-foreground))]">Distinguished advisors guiding the conference</p></div>
               </div>
               <div className="roster-panel grid gap-0 sm:grid-cols-2">
                 {['Advisory board member — To be announced', 'Advisory board member — To be announced', 'Advisory board member — To be announced', 'Advisory board member — To be announced'].map((member, index) => <div className="roster-person" key={`${member}-${index}`} data-testid={`row-advisory-member-${index}`}><span className="roster-index">{String(index + 1).padStart(2, '0')}</span><span className="roster-role">{member}</span></div>)}
@@ -470,14 +470,14 @@ function ConferenceOperations() {
             </div>
             <div>
               <div className="mb-4 flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[hsl(var(--editorial-amber))] text-[hsl(var(--editorial-navy))]"><UsersRound size={19} /></span>
-                <div><p className="editorial-kicker">Organizing Committee</p><p className="mt-1 text-xs text-[hsl(var(--editorial-muted))]">The team making BUICH 2026 possible</p></div>
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[hsl(var(--accent))] text-[hsl(var(--foreground))]"><UsersRound size={19} /></span>
+                <div><p className="editorial-kicker">Organizing Committee</p><p className="mt-1 text-xs text-[hsl(var(--muted-foreground))]">The team making BUICH 2026 possible</p></div>
               </div>
-              <div className="mb-3 font-mono-label text-[9px] uppercase tracking-[.18em] text-[hsl(var(--editorial-muted))]">Leadership</div>
+               <div className="mb-3 font-mono-label text-[9px] uppercase tracking-[.18em] text-[hsl(var(--muted-foreground))]">Leadership</div>
               <div className="roster-panel mb-6">
                 <div className="roster-person"><span className="roster-index">01</span><span className="roster-role"><strong className="roster-name">Chair — To be announced</strong>Conference leadership</span></div>
               </div>
-              <div className="mb-3 font-mono-label text-[9px] uppercase tracking-[.18em] text-[hsl(var(--editorial-muted))]">Working groups</div>
+               <div className="mb-3 font-mono-label text-[9px] uppercase tracking-[.18em] text-[hsl(var(--muted-foreground))]">Working groups</div>
               <div className="roster-panel grid gap-0 sm:grid-cols-2">
                 {['Scientific programme — To be announced', 'Registration and delegates — To be announced', 'Submission and review — To be announced', 'Venue and hospitality — To be announced', 'Communications — To be announced', 'Secretariat — To be announced'].map((member, index) => <div className="roster-person" key={`${member}-${index}`} data-testid={`row-organizing-role-${index}`}><span className="roster-index">{String(index + 1).padStart(2, '0')}</span><span className="roster-role">{member}</span></div>)}
               </div>
@@ -630,26 +630,26 @@ function Home() {
           <div className="grid gap-12 lg:grid-cols-[.72fr_1.28fr] lg:gap-24">
             <div>
               <p className="editorial-kicker">05 / Papers</p>
-              <h2 id="papers-title" className="mt-5 max-w-xl font-display text-5xl leading-[.92] tracking-[-.04em] sm:text-7xl">From presented work<br />to <em className="text-[hsl(var(--editorial-amber))]">publication.</em></h2>
-              <p className="mt-8 max-w-md text-sm leading-7 text-[hsl(var(--editorial-muted))]">The committee invites academics, researchers, practitioners, students, and professionals to submit original scientific papers aligned with the conference theme.</p>
-              <button onClick={() => setDialog('abstract')} className="focus-ring magnetic mt-8 inline-flex items-center gap-3 rounded-full bg-[hsl(var(--editorial-amber))] px-6 py-4 text-sm font-bold text-[hsl(var(--editorial-navy))]" data-testid="button-papers-submit">Submit an abstract <ArrowUpRight size={16} /></button>
+              <h2 id="papers-title" className="mt-5 max-w-xl font-display text-5xl leading-[.92] tracking-[-.04em] sm:text-7xl">From presented work<br />to <em className="text-[hsl(var(--primary))]">publication.</em></h2>
+              <p className="mt-8 max-w-md text-sm leading-7 text-[hsl(var(--muted-foreground))]">The committee invites academics, researchers, practitioners, students, and professionals to submit original scientific papers aligned with the conference theme.</p>
+              <button onClick={() => setDialog('abstract')} className="focus-ring magnetic mt-8 inline-flex items-center gap-3 rounded-full bg-[hsl(var(--primary))] px-6 py-4 text-sm font-bold text-[hsl(var(--primary-foreground))]" data-testid="button-papers-submit">Submit an abstract <ArrowUpRight size={16} /></button>
             </div>
             <div>
               <div className="mb-6 max-w-2xl">
-                <p className="editorial-kicker">Publication outputs</p>
-                <h3 className="mt-3 font-display text-4xl leading-none sm:text-5xl">Proceedings first.<br />Selected papers, <em className="text-[hsl(var(--editorial-amber))]">subject to review.</em></h3>
-                <p className="mt-4 text-sm leading-6 text-[hsl(var(--editorial-muted))]">All presented abstracts will be published as proceedings with an ISBN. Selected papers may be recommended for SINTA-indexed national journals or international journals, subject to additional review.</p>
+                 <p className="editorial-kicker">Publication outputs</p>
+                 <h3 className="mt-3 font-display text-4xl leading-none sm:text-5xl">Proceedings first.<br />Selected papers, <em className="text-[hsl(var(--primary))]">subject to review.</em></h3>
+                 <p className="mt-4 text-sm leading-6 text-[hsl(var(--muted-foreground))]">All presented abstracts will be published as proceedings with an ISBN. Selected papers may be recommended for SINTA-indexed national journals or international journals, subject to additional review.</p>
               </div>
               <div className="grid gap-2">
-                {['Conference proceedings — ISBN: To be announced', 'Selected national journal pathway — Details to be announced', 'Selected international journal pathway — Details to be announced', 'Publication and editorial guidance — To be announced', 'Article template — Available in submission form', 'Review outcome and publication schedule — To be announced'].map((output, index) => <div className="publication-row" key={output} data-testid={`row-publication-output-${index}`}><BookOpen size={17} className="text-[hsl(var(--editorial-amber))]" /><span className="publication-row-title">{output}</span><span className="publication-badge">{index === 0 ? 'Proceedings' : 'Pending details'}</span><a className="publication-link" href="#submission" aria-label={`Open submission details for ${output}`} data-testid={`link-publication-output-${index}`}><ExternalLink size={14} /></a></div>)}
+                 {['Conference proceedings — ISBN: To be announced', 'Selected national journal pathway — Details to be announced', 'Selected international journal pathway — Details to be announced', 'Publication and editorial guidance — To be announced', 'Article template — Available in submission form', 'Review outcome and publication schedule — To be announced'].map((output, index) => <div className="publication-row" key={output} data-testid={`row-publication-output-${index}`}><BookOpen size={17} className="text-[hsl(var(--primary))]" /><span className="publication-row-title">{output}</span><span className="publication-badge">{index === 0 ? 'Proceedings' : 'Pending details'}</span><a className="publication-link" href="#submission" aria-label={`Open submission details for ${output}`} data-testid={`link-publication-output-${index}`}><ExternalLink size={14} /></a></div>)}
               </div>
-              <p className="mt-6 font-mono-label text-[10px] uppercase tracking-[.14em] text-[hsl(var(--editorial-amber))]">Full publication list · To be announced →</p>
+               <p className="mt-6 font-mono-label text-[10px] uppercase tracking-[.14em] text-[hsl(var(--primary))]">Full publication list · To be announced →</p>
             </div>
           </div>
-          <div className="mt-16 grid gap-4 border-t border-[hsl(var(--editorial-line))] pt-8 md:grid-cols-3">
-            <div><FileText className="text-[hsl(var(--editorial-amber))]" size={20} /><h4 className="mt-4 font-display text-2xl">Manuscript requirements</h4><p className="mt-3 text-sm leading-6 text-[hsl(var(--editorial-muted))]">English, IMRAD structure, 3,000–5,000 words, and the official .doc / .docx template.</p></div>
-            <div><Check className="text-[hsl(var(--editorial-amber))]" size={20} /><h4 className="mt-4 font-display text-2xl">Double-blind review</h4><p className="mt-3 text-sm leading-6 text-[hsl(var(--editorial-muted))]">Submissions are evaluated for originality, relevance, scientific quality, and clarity.</p></div>
-            <div><CalendarDays className="text-[hsl(var(--editorial-amber))]" size={20} /><h4 className="mt-4 font-display text-2xl">Important dates</h4><p className="mt-3 text-sm leading-6 text-[hsl(var(--editorial-muted))]">Abstract deadline, acceptance notification, full paper deadline, and submission link: To be announced.</p></div>
+           <div className="mt-16 grid gap-4 border-t border-[hsl(var(--border))] pt-8 md:grid-cols-3">
+             <div><FileText className="text-[hsl(var(--primary))]" size={20} /><h4 className="mt-4 font-display text-2xl">Manuscript requirements</h4><p className="mt-3 text-sm leading-6 text-[hsl(var(--muted-foreground))]">English, IMRAD structure, 3,000–5,000 words, and the official .doc / .docx template.</p></div>
+             <div><Check className="text-[hsl(var(--primary))]" size={20} /><h4 className="mt-4 font-display text-2xl">Double-blind review</h4><p className="mt-3 text-sm leading-6 text-[hsl(var(--muted-foreground))]">Submissions are evaluated for originality, relevance, scientific quality, and clarity.</p></div>
+             <div><CalendarDays className="text-[hsl(var(--primary))]" size={20} /><h4 className="mt-4 font-display text-2xl">Important dates</h4><p className="mt-3 text-sm leading-6 text-[hsl(var(--muted-foreground))]">Abstract deadline, acceptance notification, full paper deadline, and submission link: To be announced.</p></div>
           </div>
         </div>
       </section>
