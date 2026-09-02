@@ -52,12 +52,12 @@
   --app-font-serif: 'Fraunces', Georgia, serif;
   --app-font-mono: 'DM Mono', monospace;
   --radius: 1.25rem;
-  --editorial-navy: 224 40% 10%;
-  --editorial-panel: 223 34% 14%;
-  --editorial-panel-raised: 222 30% 17%;
-  --editorial-line: 220 22% 24%;
-  --editorial-muted: 218 18% 65%;
-  --editorial-amber: 33 84% 55%;
+  --editorial-navy: 224 65.55% 40.98%;
+  --editorial-panel: 210 67% 95%;
+  --editorial-panel-raised: 214 54% 92%;
+  --editorial-line: 218 35% 86%;
+  --editorial-muted: 219 21% 42%;
+  --editorial-amber: 9 65% 69%;
 }
 
 .dark {
@@ -378,12 +378,12 @@ main > section:first-child::before {
 .timeline-card { transition: border-color .3s ease, background-color .3s ease, box-shadow .3s ease; }
 .editorial-section {
   background:
-    radial-gradient(circle at 88% 8%, hsl(var(--editorial-amber) / .08), transparent 22rem),
-    linear-gradient(180deg, hsl(var(--editorial-navy)), hsl(224 39% 8%));
-  color: hsl(42 43% 97%);
+    radial-gradient(circle at 88% 8%, hsl(var(--accent) / .14), transparent 22rem),
+    linear-gradient(180deg, hsl(var(--background)), hsl(var(--card)));
+  color: hsl(var(--foreground));
 }
 .editorial-kicker {
-  color: hsl(var(--editorial-amber));
+  color: hsl(var(--primary));
   font-family: var(--app-font-mono);
   font-size: 10px;
   letter-spacing: .2em;
@@ -395,27 +395,27 @@ main > section:first-child::before {
   align-items: center;
   gap: 1rem;
   min-height: 58px;
-  border: 1px solid hsl(var(--editorial-line));
-  border-radius: .72rem;
-  background: hsl(var(--editorial-panel) / .86);
+  border: 1px solid hsl(var(--border));
+  border-radius: .9rem;
+  background: hsl(var(--background));
   padding: .8rem 1rem;
   transition: border-color .25s ease, background-color .25s ease, transform .25s ease;
 }
 .publication-row:hover {
-  border-color: hsl(var(--editorial-amber) / .45);
-  background: hsl(var(--editorial-panel-raised));
+  border-color: hsl(var(--primary) / .4);
+  background: hsl(var(--card));
   transform: translateY(-2px);
 }
 .publication-row-title {
   min-width: 0;
-  color: hsl(42 43% 97%);
+  color: hsl(var(--foreground));
   font-size: .82rem;
   font-weight: 700;
 }
 .publication-badge {
   border-radius: 999px;
-  background: hsl(var(--editorial-amber) / .14);
-  color: hsl(var(--editorial-amber));
+  background: hsl(var(--primary) / .1);
+  color: hsl(var(--primary));
   font-family: var(--app-font-mono);
   font-size: 9px;
   letter-spacing: .03em;
@@ -425,27 +425,27 @@ main > section:first-child::before {
 }
 .publication-link {
   display: inline-flex;
-  color: hsl(var(--editorial-muted));
+  color: hsl(var(--muted-foreground));
   transition: color .2s ease, transform .2s ease;
 }
-.publication-link:hover { color: hsl(var(--editorial-amber)); transform: translate(2px, -2px); }
+.publication-link:hover { color: hsl(var(--primary)); transform: translate(2px, -2px); }
 .committee-editorial {
   background:
-    radial-gradient(circle at 12% 5%, hsl(var(--editorial-amber) / .08), transparent 20rem),
-    hsl(224 40% 8%);
-  color: hsl(42 43% 97%);
+    radial-gradient(circle at 12% 5%, hsl(var(--accent) / .14), transparent 20rem),
+    hsl(var(--card));
+  color: hsl(var(--foreground));
 }
 .roster-panel {
-  border: 1px solid hsl(var(--editorial-line));
+  border: 1px solid hsl(var(--border));
   border-radius: 1rem;
-  background: hsl(var(--editorial-panel) / .74);
+  background: hsl(var(--background) / .84);
 }
 .roster-person {
   display: flex;
   min-height: 54px;
   align-items: center;
   gap: .8rem;
-  border-top: 1px solid hsl(var(--editorial-line));
+  border-top: 1px solid hsl(var(--border));
   padding: .9rem 1rem;
 }
 .roster-person:first-child { border-top: 0; }
@@ -456,20 +456,20 @@ main > section:first-child::before {
   flex: 0 0 auto;
   align-items: center;
   justify-content: center;
-  border: 1px solid hsl(var(--editorial-amber) / .45);
+  border: 1px solid hsl(var(--primary) / .3);
   border-radius: 999px;
-  color: hsl(var(--editorial-amber));
+  color: hsl(var(--primary));
   font-family: var(--app-font-mono);
   font-size: 9px;
 }
 .roster-role {
-  color: hsl(var(--editorial-muted));
+  color: hsl(var(--muted-foreground));
   font-size: .76rem;
   line-height: 1.4;
 }
 .roster-name {
   display: block;
-  color: hsl(42 43% 97%);
+  color: hsl(var(--foreground));
   font-size: .87rem;
   font-weight: 700;
 }

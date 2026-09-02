@@ -455,7 +455,7 @@ function ConferenceOperations() {
         <div className="grid gap-12 lg:grid-cols-[.75fr_1.25fr] lg:gap-24">
           <div>
             <p className="editorial-kicker">08 / Committee</p>
-            <h2 id="committee-title" className="mt-5 max-w-xl font-display text-5xl leading-[.92] tracking-[-.04em] text-[hsl(42_43%_97%)] sm:text-7xl">A careful team<br />behind the <em className="text-[hsl(var(--editorial-amber))]">work.</em></h2>
+            <h2 id="committee-title" className="mt-5 max-w-xl font-display text-5xl leading-[.92] tracking-[-.04em] text-[hsl(var(--foreground))] sm:text-7xl">A careful team<br />behind the <em className="text-[hsl(var(--editorial-amber))]">work.</em></h2>
             <p className="mt-7 max-w-md text-sm leading-7 text-[hsl(var(--editorial-muted))]">The conference is convened by Batam University through its research, community service, and medical faculty partners. Names and appointments will be published as they are confirmed.</p>
           </div>
           <div className="space-y-10">
