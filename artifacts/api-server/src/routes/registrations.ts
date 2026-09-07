@@ -73,15 +73,27 @@ router.post("/registrations", requireAuth, async (req, res) => {
     res.status(403).json({ error: "Your registration email must match your signed-in account." });
     return;
   }
-  const existing = await db
+  const existingByEmail = await db
     .select({ registrationCode: registrationsTable.registrationCode })
     .from(registrationsTable)
     .where(eq(registrationsTable.email, email))
     .limit(1);
-  if (existing[0]) {
+  if (existingByEmail[0]) {
     res.status(409).json({
       error: "This email already has a registration.",
-      registrationCode: existing[0].registrationCode,
+      registrationCode: existingByEmail[0].registrationCode,
+    });
+    return;
+  }
+  const existingByUser = await db
+    .select({ registrationCode: registrationsTable.registrationCode })
+    .from(registrationsTable)
+    .where(eq(registrationsTable.userId, user.id))
+    .limit(1);
+  if (existingByUser[0]) {
+    res.status(409).json({
+      error: "User already has a registration.",
+      registrationCode: existingByUser[0].registrationCode,
     });
     return;
   }
