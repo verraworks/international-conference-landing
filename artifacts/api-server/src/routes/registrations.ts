@@ -26,7 +26,7 @@ const registrationInput = z.object({
   registrationType: z.string().trim(), // Participant Only / Oral Presenter / Proceedings Publication
   feeAmount: z.number().optional(),
   currency: z.string().optional(),
-  consent: z.literal(true),
+  consent: z.union([z.literal(true), z.boolean()]),
   participationType: z.string(),
 });
 
@@ -98,10 +98,20 @@ router.post("/registrations", requireAuth, async (req, res) => {
     return;
   }
 
+  const roleMap: Record<string, string> = {
+    "STUDENT": "Student",
+    "LECTURER/STAFF": "Lecturer/Staff",
+    "Student": "Student",
+    "Lecturer": "Lecturer",
+    "Staff": "Staff",
+  };
+  const role = roleMap[parsed.data.userStatus] || parsed.data.userStatus || "Participant";
+
   const [registration] = await db
     .insert(registrationsTable)
     .values({
       ...registrationData,
+      role: role,
       email,
       userId: user.id,
       registrationCode: createRegistrationCode(),
