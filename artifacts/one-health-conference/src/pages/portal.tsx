@@ -6,6 +6,11 @@ type Registration = { id: string; registrationCode: string; fullName: string; em
 
 async function api<T>(url: string, init: RequestInit = {}) {
   const response = await fetch(url, init);
+  const contentType = response.headers.get("content-type") || "";
+  if (!contentType.includes("application/json")) {
+    const text = await response.text();
+    throw new Error(`Server error (${response.status}): ${text.slice(0, 100)}`);
+  }
   const body = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(body.error || "Terjadi kesalahan.");
   return body as T;

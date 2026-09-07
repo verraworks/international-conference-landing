@@ -290,6 +290,13 @@ function ScheduleTimeline({ entries }: { entries: string[][] }) {
   );
 }
 
+async function requestJson<T>(input: RequestInfo | URL, init?: RequestInit): Promise<T> {
+  const response = await fetch(input, init);
+  const body = (await response.json().catch(() => ({}))) as { error?: string };
+  if (!response.ok) throw new Error(body.error || 'Something went wrong. Please try again.');
+  return body as T;
+}
+
 function RegistrationCTACard() {
   return <div className="rounded-[28px] bg-[hsl(var(--background))] p-6 soft-shadow sm:p-8">
     <p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-[hsl(var(--primary))]">06 / Registration</p>

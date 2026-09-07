@@ -51,8 +51,10 @@ export default function RegistrationPage() {
     if (!token) return;
     fetch("/api/auth/me", { headers: { Authorization: `Bearer ${token}` } })
       .then(async r => {
-        const body = await r.json();
         if (!r.ok) throw new Error();
+        const contentType = r.headers.get("content-type") || "";
+        if (!contentType.includes("application/json")) throw new Error();
+        const body = await r.json();
         setForm(v => ({ ...v, fullName: body.user.fullName }));
         setEmail(body.user.email);
         setReady(true);
