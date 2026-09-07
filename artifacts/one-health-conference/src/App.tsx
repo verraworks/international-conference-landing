@@ -502,10 +502,19 @@ type AdminRegistration = {
   fullName: string;
   email: string;
   institution: string;
-  participationType: string;
+  phone: string;
+  studyProgram?: string;
+  participantOrigin?: string;
+  npmNidn?: string;
+  userStatus?: string;
+  attendanceStatus?: string;
+  feeAmount?: number;
+  currency?: string;
   registrationType: string;
   status: string;
   paymentStatus: string;
+  paymentProofName?: string | null;
+  paymentProofPath?: string | null;
   createdAt: string;
 };
 
@@ -513,25 +522,46 @@ function AdminDashboard() {
   const [rows, setRows] = useState<AdminRegistration[]>([]);
   const [stats, setStats] = useState<Record<string, number>>({});
   const [filter, setFilter] = useState('all');
-  const [adminKey, setAdminKey] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  const [selectedProof, setSelectedProof] = useState<string | null>(null);
   const headers: Record<string, string> = localStorage.getItem('buich_token') ? { Authorization: `Bearer ${localStorage.getItem('buich_token')}` } : {};
   const load = async () => {
-    setLoading(true);
-    setError('');
+    setLoading(true); setError('');
     try {
-      const [statsResponse, rowsResponse] = await Promise.all([
+      const [statsRes, rowsRes] = await Promise.all([
         requestJson<Record<string, number>>('/api/admin/stats', { headers }),
         requestJson<{ registrations: AdminRegistration[] }>(`/api/admin/registrations${filter === 'all' ? '' : `?status=${filter}`}`, { headers }),
       ]);
-      setStats(statsResponse);
-      setRows(rowsResponse.registrations);
-    } catch (loadError) {
-      setError(loadError instanceof Error ? loadError.message : 'Admin data could not be loaded.');
-    } finally {
-      setLoading(false);
-    }
+      setStats(statsRes); setRows(rowsRes.registrations);
+    } catch (e) { setError(e instanceof Error ? e.message : 'Gagal memuat data.'); } finally { setLoading(false); }
+  };
+  useEffect(() => { void load(); }, [filter]);
+  const updateStatus = async (id: string, status: string, paymentStatus: string) => {
+    await requestJson(`/api/admin/registrations/${id}/status`, { method: 'PATCH', headers: { 'Content-Type': 'application/json', ...headers }, body: JSON.stringify({ status, paymentStatus }) });
+    await load();
+  };
+  const fmt = (n?: number) => n ? 'IDR ' + n.toLocaleString('id-ID') : '—';
+  return <div className="min-h-[100dvh] bg-slate-50 px-5 py-8 sm:px-8 lg:px-12">
+    {selectedProof && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={() => setSelectedProof(null)}><img src={selectedProof} className="max-h-[85vh] max-w-full rounded-2xl shadow-2xl" alt="Bukti bayar" /></div>}
+    <div className="mx-auto max-w-[1400px]">
+      <header className="flex flex-wrap items-center justify-between gap-5">
+        <div><p className="text-xs font-bold uppercase tracking-widest text-teal-700">BUICH 2026</p><h1 className="mt-1 text-4xl font-black">Sistem Informasi Admin</h1></div>
+        <div className="flex gap-3"><a href="/" className="rounded-xl bg-white px-4 py-2 text-sm font-bold shadow-sm">Website</a><button onClick={() => void load()} className="rounded-xl bg-teal-700 p-2 text-white">↻ Refresh</button></div>
+      </header>
+      {error && <p className="mt-5 rounded-xl bg-red-50 p-4 text-sm text-red-700">{error}</p>}
+      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-6">{[['total', 'Total'], ['pending', 'Pending'], ['accepted', 'Accepted'], ['paid', 'Paid'], ['submissions', 'Submissions'], ['revenue', 'Revenue (IDR)']].map(([k, l]) => <div key={k} className="rounded-2xl bg-white p-5 shadow-sm"><p className="text-xs font-bold uppercase tracking-widest text-slate-400">{l}</p><p className="mt-2 text-3xl font-black text-teal-700">{k === 'revenue' ? (stats[k] ? 'IDR ' + Number(stats[k]).toLocaleString('id-ID') : 'IDR 0') : (stats[k] ?? 0)}</p></div>)}</div>
+      <div className="mt-8 flex gap-2 flex-wrap">{['all','pending','accepted','paid','rejected'].map(s => <button key={s} onClick={() => setFilter(s)} className={`rounded-full px-4 py-2 text-xs font-bold ${filter === s ? 'bg-teal-700 text-white' : 'bg-white text-slate-600 shadow-sm'}`}>{s === 'all' ? 'Semua' : s}</button>)}</div>
+      <div className="mt-6 overflow-x-auto rounded-2xl bg-white shadow-sm">
+        <table className="w-full text-sm text-left"><thead className="bg-slate-50 text-xs uppercase"><tr><th className="px-4 py-3">Kode</th><th className="px-4 py-3">Nama</th><th className="px-4 py-3">Asal</th><th className="px-4 py-3">Program Studi</th><th className="px-4 py-3">Tipe</th><th className="px-4 py-3">Kehadiran</th><th className="px-4 py-3">Fee</th><th className="px-4 py-3">Status</th><th className="px-4 py-3">Pembayaran</th><th className="px-4 py-3">Bukti</th><th className="px-4 py-3">Aksi</th></tr></thead>
+        <tbody>{rows.map(r => <tr key={r.id} className="border-t hover:bg-slate-50"><td className="px-4 py-3 font-mono text-xs whitespace-nowrap">{r.registrationCode}</td><td className="px-4 py-3"><p className="font-semibold">{r.fullName}</p><p className="text-xs text-slate-400">{r.email}</p></td><td className="px-4 py-3 text-xs">{r.participantOrigin?.includes('Internal') ? 'Internal' : 'External'}</td><td className="px-4 py-3 text-xs">{r.studyProgram || '—'}</td><td className="px-4 py-3 text-xs">{r.registrationType}</td><td className="px-4 py-3 text-xs">{r.attendanceStatus || '—'}</td><td className="px-4 py-3 text-xs font-bold">{fmt(r.feeAmount)}</td><td className="px-4 py-3"><span className={`inline-block rounded-full px-2 py-1 text-[10px] font-bold uppercase ${r.status === 'accepted' ? 'bg-green-100 text-green-700' : r.status === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'}`}>{r.status}</span></td><td className="px-4 py-3"><span className={`inline-block rounded-full px-2 py-1 text-[10px] font-bold uppercase ${r.paymentStatus === 'paid' ? 'bg-green-100 text-green-700' : r.paymentStatus === 'pending' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-500'}`}>{r.paymentStatus}</span></td>
+          <td className="px-4 py-3">{r.paymentProofName ? <button onClick={() => setSelectedProof(r.paymentProofPath || null)} className="text-xs font-bold text-teal-700 underline">Lihat</button> : '—'}</td>
+          <td className="px-4 py-3"><div className="flex flex-col gap-1"><button onClick={() => updateStatus(r.id, 'accepted', r.paymentStatus === 'pending' ? 'paid' : r.paymentStatus)} className="rounded-lg bg-green-600 px-2 py-1 text-[10px] font-bold text-white">Terima</button><button onClick={() => updateStatus(r.id, 'rejected', 'unpaid')} className="rounded-lg bg-red-600 px-2 py-1 text-[10px] font-bold text-white">Tolak</button></div></td></tr>)}</tbody></table>
+        {rows.length === 0 && !loading && <p className="p-8 text-center text-slate-400">Tidak ada data.</p>}
+      </div>
+    </div>
+  </div>;
+}
   };
   useEffect(() => { void load(); }, [filter]);
   const updateStatus = async (id: string, status: string, paymentStatus: string) => {

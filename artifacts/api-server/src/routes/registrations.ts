@@ -214,30 +214,19 @@ router.get("/admin/registrations", requireAdmin, async (req, res) => {
 });
 
 router.get("/admin/stats", requireAdmin, async (_req, res) => {
-  const [total] = await db
-    .select({ count: sql<number>`count(*)` })
-    .from(registrationsTable);
-  const [pending] = await db
-    .select({ count: sql<number>`count(*)` })
-    .from(registrationsTable)
-    .where(eq(registrationsTable.status, "pending"));
-  const [accepted] = await db
-    .select({ count: sql<number>`count(*)` })
-    .from(registrationsTable)
-    .where(eq(registrationsTable.status, "accepted"));
-  const [paid] = await db
-    .select({ count: sql<number>`count(*)` })
-    .from(registrationsTable)
-    .where(eq(registrationsTable.paymentStatus, "paid"));
-  const [submissions] = await db
-    .select({ count: sql<number>`count(*)` })
-    .from(submissionsTable);
+  const [total] = await db.select({ count: sql<number>`count(*)` }).from(registrationsTable);
+  const [pending] = await db.select({ count: sql<number>`count(*)` }).from(registrationsTable).where(eq(registrationsTable.status, "pending"));
+  const [accepted] = await db.select({ count: sql<number>`count(*)` }).from(registrationsTable).where(eq(registrationsTable.status, "accepted"));
+  const [paid] = await db.select({ count: sql<number>`count(*)` }).from(registrationsTable).where(eq(registrationsTable.paymentStatus, "paid"));
+  const [submissions] = await db.select({ count: sql<number>`count(*)` }).from(submissionsTable);
+  const [revenue] = await db.select({ total: sql<number>`coalesce(sum(fee_amount), 0)` }).from(registrationsTable).where(eq(registrationsTable.paymentStatus, "paid"));
   res.json({
     total: Number(total?.count || 0),
     pending: Number(pending?.count || 0),
     accepted: Number(accepted?.count || 0),
     paid: Number(paid?.count || 0),
     submissions: Number(submissions?.count || 0),
+    revenue: Number(revenue?.total || 0),
   });
 });
 
