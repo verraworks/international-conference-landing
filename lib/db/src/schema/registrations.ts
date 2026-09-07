@@ -28,6 +28,13 @@ export const registrationsTable = pgTable(
     dietaryRequirements: varchar("dietary_requirements", { length: 500 }),
     participationType: varchar("participation_type", { length: 24 }).notNull(),
     registrationType: varchar("registration_type", { length: 64 }).notNull(),
+    participantOrigin: varchar("participant_origin", { length: 64 }), // Internal/External
+    npmNidn: varchar("npm_nidn", { length: 50 }),
+    studyProgram: varchar("study_program", { length: 160 }),
+    userStatus: varchar("user_status", { length: 64 }), // Student/Lecturer/Staff
+    attendanceStatus: varchar("attendance_status", { length: 24 }), // Online/Offline
+    feeAmount: integer("fee_amount"),
+    currency: varchar("currency", { length: 10 }).default("IDR"),
     status: varchar("status", { length: 32 }).notNull().default("pending"),
     paymentStatus: varchar("payment_status", { length: 32 })
       .notNull()

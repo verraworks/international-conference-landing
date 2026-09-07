@@ -16,15 +16,18 @@ const registrationInput = z.object({
   email: z.string().trim().email().max(320),
   phone: z.string().trim().min(8).max(40),
   institution: z.string().trim().min(2).max(240),
-  country: z.string().trim().min(2).max(120),
-  role: z.string().trim().min(2).max(120),
-  address: z.string().trim().max(1000).optional(),
-  emergencyContact: z.string().trim().max(160).optional(),
-  emergencyPhone: z.string().trim().max(40).optional(),
-  dietaryRequirements: z.string().trim().max(500).optional(),
+  country: z.string().trim().min(2).max(120).default("Indonesia"),
+  role: z.string().trim().max(120).optional(),
+  participantOrigin: z.string().trim(), // Internal Participant / External Participant
+  npmNidn: z.string().trim().min(2).max(50),
+  studyProgram: z.string().trim().min(2).max(160),
+  userStatus: z.string().trim(), // STUDENT / LECTURER/STAFF
+  attendanceStatus: z.string().trim(), // ONLINE / OFFLINE
+  registrationType: z.string().trim(), // Participant Only / Oral Presenter / Proceedings Publication
+  feeAmount: z.number().optional(),
+  currency: z.string().optional(),
   consent: z.literal(true),
-  participationType: z.enum(["onsite", "online", "hybrid"]),
-  registrationType: z.string().trim().min(2).max(64),
+  participationType: z.string(),
 });
 
 const statusInput = z.object({
