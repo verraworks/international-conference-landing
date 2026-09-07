@@ -440,26 +440,31 @@ function ConferenceOperations() {
         <div className="mb-12 max-w-2xl">
           <p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-[hsl(var(--primary))]">09 / Payment information</p>
           <h2 id="payment-title" className="mt-5 font-display text-5xl leading-[.93] tracking-[-.04em] sm:text-7xl">Registration, in <em className="text-[hsl(var(--primary))]">plain view.</em></h2>
-          <p className="mt-6 max-w-xl text-sm leading-7 text-[hsl(var(--muted-foreground))]">Official fees and payment instructions will be released by the organizing committee. Until then, keep your registration code safe and use only confirmed conference channels.</p>
+          <p className="mt-6 max-w-xl text-sm leading-7 text-[hsl(var(--muted-foreground))]">Choose your category and the fee is calculated automatically during registration.</p>
         </div>
         <div className="grid items-start gap-6 lg:grid-cols-[1.5fr_.75fr]">
           <div>
             <div className="mb-3 flex items-center gap-2"><CreditCard className="text-[hsl(var(--primary))]" size={18} /><h3 className="font-display text-3xl">Registration fee</h3></div>
             <div className="fee-table-shell" data-testid="table-registration-fees">
               <table className="fee-table">
-                <thead><tr><th>Category</th><th>Direct</th><th>Virtual</th></tr></thead>
+                <thead><tr><th>Category</th><th>IDR</th><th>USD</th></tr></thead>
                 <tbody>
-                  {['Participant — Local', 'Presenter — Local', 'Student — Local', 'Participant — International', 'Presenter — International', 'Committee / invited guest'].map((category) => <tr key={category}><td>{category}</td><td>To be announced</td><td>To be announced</td></tr>)}
-                  <tr className="fee-highlight"><td>Publication fee</td><td>To be announced</td><td>To be announced</td></tr>
+                  <tr><td>Early Bird — Oral Presenter</td><td>650,000</td><td>36.63 USD</td></tr>
+                  <tr><td>Internal Oral Presenter (Students & Staff)</td><td>500,000</td><td>28.18 USD</td></tr>
+                  <tr><td>External Participant Only</td><td>300,000</td><td>16.92 USD</td></tr>
+                  <tr><td>Internal Participant Only</td><td>150,000</td><td>8.46 USD</td></tr>
+                  <tr><td>Oral Presenter — Online</td><td>850,000</td><td>47.94 USD</td></tr>
+                  <tr><td>Oral Presenter — Offline</td><td>1,000,000</td><td>56.41 USD</td></tr>
+                  <tr className="fee-highlight"><td>Proceedings Publication (SINTA 4 Journal)</td><td>1,850,000</td><td>104.36 USD</td></tr>
                 </tbody>
               </table>
             </div>
-            <p className="mt-3 rounded-xl bg-[hsl(164_46%_91%)] px-4 py-3 text-sm font-semibold text-[hsl(170_35%_34%)]">Payment details, rates, and any fee waivers are to be announced.</p>
+            <p className="mt-3 rounded-xl bg-[hsl(164_46%_91%)] px-4 py-3 text-sm font-semibold text-[hsl(170_35%_34%)]">Note: USD rate is subject to exchange rate adjustment.</p>
           </div>
           <aside className="announcement-panel">
             <div className="relative z-[1]">
               <div className="flex items-center gap-3"><span className="flex h-9 w-9 items-center justify-center rounded-full bg-[hsl(164_46%_91%)] text-[hsl(170_35%_46%)]"><Check size={16} /></span><h3 className="font-display text-3xl">Announcement</h3></div>
-              <p className="mt-5 text-sm leading-6 text-[hsl(var(--muted-foreground))]">Details regarding article submission guidelines, registration procedures, and payment information will be announced soon on the official BUICH 2026 website. Please return here for the latest confirmed information.</p>
+              <p className="mt-5 text-sm leading-6 text-[hsl(var(--muted-foreground))]">Complete your registration, upload payment proof, and the committee will verify your payment to issue your unique verification code.</p>
               <a href="#contact" className="focus-ring mt-6 inline-flex items-center gap-2 rounded-full bg-[hsl(var(--primary))] px-4 py-3 text-xs font-bold text-[hsl(var(--primary-foreground))]" data-testid="link-payment-contact">Contact committee <ArrowUpRight size={14} /></a>
             </div>
           </aside>
@@ -532,6 +537,7 @@ function AdminDashboard() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [selectedProof, setSelectedProof] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
   const headers: Record<string, string> = localStorage.getItem('buich_token') ? { Authorization: `Bearer ${localStorage.getItem('buich_token')}` } : {};
   const load = async () => {
     setLoading(true); setError('');
@@ -545,9 +551,13 @@ function AdminDashboard() {
   };
   useEffect(() => { void load(); }, [filter]);
   const updateStatus = async (id: string, status: string, paymentStatus: string) => {
-    await requestJson(`/api/admin/registrations/${id}/status`, { method: 'PATCH', headers: { 'Content-Type': 'application/json', ...headers }, body: JSON.stringify({ status, paymentStatus }) });
-    await load();
+    setBusyId(id);
+    try {
+      await requestJson(`/api/admin/registrations/${id}/status`, { method: 'PATCH', headers: { 'Content-Type': 'application/json', ...headers }, body: JSON.stringify({ status, paymentStatus }) });
+      await load();
+    } catch (e) { setError(e instanceof Error ? e.message : 'Gagal update status'); } finally { setBusyId(null); }
   };
+  const settled = (r: AdminRegistration) => r.status === 'accepted' || r.status === 'rejected';
   const fmt = (n?: number) => n ? 'IDR ' + n.toLocaleString('id-ID') : '—';
   return <div className="min-h-[100dvh] bg-slate-50 px-5 py-8 sm:px-8 lg:px-12">
     {selectedProof && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={() => setSelectedProof(null)}><img src={selectedProof} className="max-h-[85vh] max-w-full rounded-2xl shadow-2xl" alt="Bukti bayar" /></div>}
@@ -563,7 +573,7 @@ function AdminDashboard() {
         <table className="w-full text-sm text-left"><thead className="bg-slate-50 text-xs uppercase"><tr><th className="px-4 py-3">Kode</th><th className="px-4 py-3">Nama</th><th className="px-4 py-3">Asal</th><th className="px-4 py-3">Program Studi</th><th className="px-4 py-3">Tipe</th><th className="px-4 py-3">Kehadiran</th><th className="px-4 py-3">Fee</th><th className="px-4 py-3">Status</th><th className="px-4 py-3">Pembayaran</th><th className="px-4 py-3">Bukti</th><th className="px-4 py-3">Aksi</th></tr></thead>
         <tbody>{rows.map(r => <tr key={r.id} className="border-t hover:bg-slate-50"><td className="px-4 py-3 font-mono text-xs whitespace-nowrap">{r.registrationCode}</td><td className="px-4 py-3"><p className="font-semibold">{r.fullName}</p><p className="text-xs text-slate-400">{r.email}</p></td><td className="px-4 py-3 text-xs">{r.participantOrigin?.includes('Internal') ? 'Internal' : 'External'}</td><td className="px-4 py-3 text-xs">{r.studyProgram || '—'}</td><td className="px-4 py-3 text-xs">{r.registrationType}</td><td className="px-4 py-3 text-xs">{r.attendanceStatus || '—'}</td><td className="px-4 py-3 text-xs font-bold">{fmt(r.feeAmount)}</td><td className="px-4 py-3"><span className={`inline-block rounded-full px-2 py-1 text-[10px] font-bold uppercase ${r.status === 'accepted' ? 'bg-green-100 text-green-700' : r.status === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'}`}>{r.status}</span></td><td className="px-4 py-3"><span className={`inline-block rounded-full px-2 py-1 text-[10px] font-bold uppercase ${r.paymentStatus === 'paid' ? 'bg-green-100 text-green-700' : r.paymentStatus === 'pending' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-500'}`}>{r.paymentStatus}</span></td>
           <td className="px-4 py-3">{r.paymentProofName ? <button onClick={() => setSelectedProof(r.paymentProofPath || null)} className="text-xs font-bold text-teal-700 underline">Lihat</button> : '—'}</td>
-          <td className="px-4 py-3"><div className="flex flex-col gap-1"><button onClick={() => updateStatus(r.id, 'accepted', r.paymentStatus === 'pending' ? 'paid' : r.paymentStatus)} className="rounded-lg bg-green-600 px-2 py-1 text-[10px] font-bold text-white">Terima</button><button onClick={() => updateStatus(r.id, 'rejected', 'unpaid')} className="rounded-lg bg-red-600 px-2 py-1 text-[10px] font-bold text-white">Tolak</button></div></td></tr>)}</tbody></table>
+          <td className="px-4 py-3"><div className="flex flex-col gap-1">{settled(r) ? <span className="text-[10px] font-bold text-slate-400">{r.status === 'accepted' ? '✓ Diterima' : '✗ Ditolak'}</span> : <><button disabled={busyId === r.id} onClick={() => updateStatus(r.id, 'accepted', r.paymentStatus === 'pending' ? 'paid' : r.paymentStatus)} className="rounded-lg bg-green-600 px-2 py-1 text-[10px] font-bold text-white disabled:opacity-50">{busyId === r.id ? '...' : 'Terima'}</button><button disabled={busyId === r.id} onClick={() => updateStatus(r.id, 'rejected', 'unpaid')} className="rounded-lg bg-red-600 px-2 py-1 text-[10px] font-bold text-white disabled:opacity-50">{busyId === r.id ? '...' : 'Tolak'}</button></>}</div></td></tr>)}</tbody></table>
         {rows.length === 0 && !loading && <p className="p-8 text-center text-slate-400">Tidak ada data.</p>}
       </div>
     </div>

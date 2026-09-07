@@ -1,0 +1,4 @@
+import { Link } from "wouter";
+export default function SectionAbout() {
+  return <main className="px-5 py-24 sm:px-8 lg:px-12"><div className="mx-auto max-w-[1250px]"><Link href="/" className="text-sm font-bold text-teal-700">← Home</Link><h1 className="mt-6 font-display text-5xl">About BUICH 2026</h1><p className="mt-4 max-w-3xl text-base leading-8 text-slate-600">Globalization, industrial development, emerging infections, non-communicable diseases, workplace accidents, environmental hazards, and sudden medical emergencies are reshaping occupational health. BUICH 2026 is a scientific forum to share evidence, exchange practice, and formulate joint strategies that connect occupational health services, community health resources, emergency responders, and referral networks. Content will be expanded with full editorial copy from the landing About section.</p></div></main>;
+}
