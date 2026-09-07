@@ -44,7 +44,7 @@ import NotFound from '@/pages/not-found';
 import ParticipantPortal from '@/pages/portal';
 import RegistrationPage from '@/pages/registration';
 import { LandingAuthLinks } from '@/components/landing-auth-links';
-import { Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
+import { Link, Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
 
 const queryClient = new QueryClient();
 type Language = 'EN' | 'ID';
