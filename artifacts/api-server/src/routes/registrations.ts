@@ -6,6 +6,7 @@ import {
   db,
   registrationsTable,
   submissionsTable,
+  coAuthorsTable,
 } from "@workspace/db";
 import { requireAdmin, requireAuth, type AuthUser } from "./auth";
 
@@ -49,10 +50,19 @@ const submissionInput = z.object({
   email: z.string().trim().email().max(320),
   title: z.string().trim().min(5).max(320),
   submissionType: z.enum(["abstract", "full-paper"]),
+  scope: z.string().trim().min(2).max(120),
   abstractText: z.string().trim().min(80).max(15000),
   keywords: z.string().trim().max(500).optional(),
   fileName: z.string().trim().max(255).optional(),
   filePath: z.string().trim().max(500).optional(),
+  coAuthors: z.array(z.object({
+    fullName: z.string().trim().min(2).max(160),
+    email: z.string().trim().email().max(320),
+    affiliation: z.string().trim().min(2).max(240),
+    country: z.string().trim().min(2).max(120),
+  })).optional(),
+  copyrightAgreed: z.union([z.literal(true), z.boolean()]),
+  ethicsAgreed: z.union([z.literal(true), z.boolean()]),
 });
 
 function createRegistrationCode() {
@@ -187,7 +197,7 @@ router.get("/registrations/status", async (req, res) => {
 router.post("/submissions", async (req, res) => {
   const parsed = submissionInput.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ error: "Please provide the required submission details." });
+    res.status(400).json({ error: "Data submission tidak lengkap." });
     return;
   }
 
@@ -202,23 +212,50 @@ router.post("/submissions", async (req, res) => {
     )
     .limit(1);
   if (!registration) {
-    res.status(404).json({ error: "Registration code and email do not match." });
+    res.status(404).json({ error: "Kode registrasi dan email tidak cocok." });
     return;
   }
+
+  const { coAuthors, ...subData } = parsed.data;
 
   const [submission] = await db
     .insert(submissionsTable)
     .values({
-      ...parsed.data,
+      ...subData,
       registrationCode: parsed.data.registrationCode.toUpperCase(),
       email: parsed.data.email.toLowerCase(),
       keywords: parsed.data.keywords || null,
       fileName: parsed.data.fileName || null,
       filePath: parsed.data.filePath || null,
+      status: "submitted",
+      submittedAt: new Date(),
     })
     .returning();
 
-  res.status(201).json({ message: "Submission received.", submission });
+  if (coAuthors && coAuthors.length > 0) {
+    for (let i = 0; i < coAuthors.length; i++) {
+      await db.insert(coAuthorsTable).values({
+        submissionId: submission.id,
+        fullName: coAuthors[i].fullName,
+        email: coAuthors[i].email,
+        affiliation: coAuthors[i].affiliation,
+        country: coAuthors[i].country,
+        order: i + 1,
+      });
+    }
+  }
+
+  res.status(201).json({ message: "Submission berhasil dikirim.", submission });
+});
+
+router.get("/submissions/mine", requireAuth, async (req, res) => {
+  const user = (req as Request & { user: AuthUser }).user;
+  const submissions = await db
+    .select()
+    .from(submissionsTable)
+    .where(eq(submissionsTable.email, user.email))
+    .orderBy(desc(submissionsTable.createdAt));
+  res.json({ submissions });
 });
 
 router.get("/admin/registrations", requireAdmin, async (req, res) => {
@@ -291,18 +328,22 @@ router.get("/admin/submissions", requireAdmin, async (_req, res) => {
 
 router.patch("/admin/submissions/:id/status", requireAdmin, async (req, res) => {
   const id = z.string().uuid().safeParse(req.params.id);
-  const status = z.enum(["received", "under_review", "accepted", "revision", "rejected"]).safeParse(req.body.status);
+  const status = z.enum(["submitted", "received", "under_review", "revision", "published", "accepted", "rejected"]).safeParse(req.body.status);
   if (!id.success || !status.success) {
-    res.status(400).json({ error: "Invalid submission update." });
+    res.status(400).json({ error: "Status update tidak valid." });
     return;
   }
   const [submission] = await db
     .update(submissionsTable)
-    .set({ status: status.data, updatedAt: new Date() })
+    .set({
+      status: status.data,
+      ...(req.body.reviewerNotes ? { reviewerNotes: req.body.reviewerNotes } : {}),
+      updatedAt: new Date(),
+    })
     .where(eq(submissionsTable.id, id.data))
     .returning();
   if (!submission) {
-    res.status(404).json({ error: "Submission not found." });
+    res.status(404).json({ error: "Submission tidak ditemukan." });
     return;
   }
   res.json({ submission });

@@ -1,4 +1,5 @@
 import {
+  boolean,
   index,
   integer,
   pgTable,
@@ -86,10 +87,15 @@ export const submissionsTable = pgTable(
     submissionType: varchar("submission_type", { length: 24 }).notNull(),
     abstractText: text("abstract_text").notNull(),
     keywords: varchar("keywords", { length: 500 }),
+    scope: varchar("scope", { length: 120 }),
+    userId: uuid("user_id"),
     fileName: varchar("file_name", { length: 255 }),
     filePath: varchar("file_path", { length: 500 }),
-    status: varchar("status", { length: 32 }).notNull().default("received"),
+    copyrightAgreed: boolean("copyright_agreed").default(false),
+    ethicsAgreed: boolean("ethics_agreed").default(false),
+    status: varchar("status", { length: 32 }).notNull().default("draft"),
     reviewerNotes: text("reviewer_notes"),
+    submittedAt: timestamp("submitted_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -105,6 +111,27 @@ export const submissionsTable = pgTable(
   }),
 );
 
+export const coAuthorsTable = pgTable(
+  "buich_co_authors",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    submissionId: uuid("submission_id")
+      .notNull()
+      .references(() => submissionsTable.id, { onDelete: "cascade" }),
+    fullName: varchar("full_name", { length: 160 }).notNull(),
+    email: varchar("email", { length: 320 }).notNull(),
+    affiliation: varchar("affiliation", { length: 240 }).notNull(),
+    country: varchar("country", { length: 120 }).notNull(),
+    order: integer("order").notNull().default(0),
+  },
+  (table) => ({
+    submissionIdx: index("buich_co_authors_submission_idx").on(
+      table.submissionId,
+    ),
+  }),
+);
+
 export type Registration = typeof registrationsTable.$inferSelect;
 export type Submission = typeof submissionsTable.$inferSelect;
 export type User = typeof usersTable.$inferSelect;
+export type CoAuthor = typeof coAuthorsTable.$inferSelect;

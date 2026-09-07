@@ -43,6 +43,8 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
 import ParticipantPortal from '@/pages/portal';
 import RegistrationPage from '@/pages/registration';
+import SubmitPaperPage from '@/pages/submit-paper';
+import MyPapersPage from '@/pages/my-papers';
 import { LandingAuthLinks } from '@/components/landing-auth-links';
 import { Link, Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
 
@@ -643,7 +645,7 @@ function Home() {
 }
 
 function Router() {
-  return <RoutedErrorBoundary><Switch><Route path="/" component={Home} /><Route path="/portal" component={ParticipantPortal} /><Route path="/registration" component={RegistrationPage} /><Route path="/admin" component={AdminDashboard} /><Route component={NotFound} /></Switch><LandingAuthLinks /></RoutedErrorBoundary>;
+  return <RoutedErrorBoundary><Switch><Route path="/" component={Home} /><Route path="/portal" component={ParticipantPortal} /><Route path="/registration" component={RegistrationPage} /><Route path="/submit-paper" component={SubmitPaperPage} /><Route path="/my-papers" component={MyPapersPage} /><Route path="/admin" component={AdminDashboard} /><Route component={NotFound} /></Switch><LandingAuthLinks /></RoutedErrorBoundary>;
 }
 
 function RoutedErrorBoundary({ children }: { children: ReactNode }) {
